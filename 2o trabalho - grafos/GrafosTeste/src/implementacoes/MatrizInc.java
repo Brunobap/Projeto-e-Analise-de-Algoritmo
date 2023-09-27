@@ -9,11 +9,19 @@ import grafos.Vertice;
 
 public class MatrizInc implements Grafo {
 		
-	private int numAres;
 	private int numVerts;
+	private int numAres;
 	private double[][] matAres;
-	
+	private ArrayList<Vertice> arrayVerts;
+	private ArrayList<Aresta> arrayAres;
+
 	// Getters e Setters
+	public int getNumAres() {
+		return numAres;
+	}
+	public void setNumAres(int numAres) {
+		this.numAres = numAres;
+	}
 	public double[][] getmatAres() {	
 		return matAres;
 	}
@@ -25,15 +33,29 @@ public class MatrizInc implements Grafo {
 	}	
 	public void setmatAres(double[][] matAres) {	
 		this.matAres = matAres;
+	}	
+	public ArrayList<Vertice> getArrayVerts() {
+		return arrayVerts;
+	}
+	public void setArrayVerts(ArrayList<Vertice> arrayVerts) {
+		this.arrayVerts = arrayVerts;
+	}	
+	public ArrayList<Aresta> getArrayAres() {
+		return arrayAres;
+	}
+	public void setArrayAres(ArrayList<Aresta> arrayAres) {
+		this.arrayAres = arrayAres;
 	}
 	
 	// Função para testes no console
 	public String print() {
 		String saida = "";
 		
-		for (int i=0; i<this.numAres; i++) {
-			for (int j=0; j<this.numVerts; j++) {
-				saida += " "+this.matAres[i][j];
+		for (int i=0; i<this.numVerts; i++) {
+			for (int j=0; j<this.numAres; j++) {
+				saida += " ";
+				if (this.matAres[i][j] < 10) saida += "0";
+				saida += this.matAres[i][j];
 			} saida += "\n";
 		}
 		
@@ -42,33 +64,63 @@ public class MatrizInc implements Grafo {
 	
 	// ctor da representação
 	public MatrizInc(ArrayList<String> entrada) {
-		this.setNumVerts(Integer.parseInt(entrada.get(0)));
-		entrada.remove(0);
+		this.numVerts = Integer.parseInt(entrada.get(0));
 		
 		this.numAres = 0;
-		for (String linha : entrada) 
-			this.numAres += linha.split(" ").length-1;
+		for (int i=1; i<entrada.size(); i++)
+			this.numAres += entrada.get(i).split(" ").length-1;
 		
-		this.matAres = new double[this.numAres][this.numVerts];
+		this.matAres = new double[this.numVerts][this.numAres];
+		this.arrayAres = new ArrayList<Aresta>();
+		this.arrayVerts = new ArrayList<Vertice>();
 		int aux = 0;
-		for (String linha : entrada) {
-			String[] pedacos = linha.split(" ");
-			for (int i=1; i<pedacos.length; i++) {
-				String strDestino = pedacos[i].substring(0,pedacos[i].indexOf('-'));
-				String strPeso = pedacos[i].substring(pedacos[i].indexOf('-')+1, pedacos[i].indexOf(';'));
-				this.matAres[aux][Integer.parseInt(strDestino)] = Double.parseDouble(strPeso);
+		for (int i=1; i<=this.numVerts; i++) {			
+			String[] linha = entrada.get(i).split(" ");
+			// Ver se o vértice já existe
+			Vertice vOrigem = null;
+			for (Vertice v : this.arrayVerts) 
+				if (v.id() == Integer.parseInt(linha[0])) {
+					vOrigem = v;
+					break;
+				}
+			// Se não existir, criar um novo
+			if (vOrigem == null) {
+				vOrigem = new Vertice(Integer.parseInt(linha[0]));
+				this.arrayVerts.add(vOrigem);
+			}
+			
+			for (int j=1; j<linha.length; j++) {
+				String strDest = linha[j].substring(0,linha[j].indexOf('-'));
+				String strPeso = linha[j].substring(linha[j].indexOf('-')+1, linha[j].indexOf(';'));
+				this.matAres[Integer.parseInt(strDest)][aux] = Integer.parseInt(strPeso);
 				aux++;
+				
+				// Ver se o vértice já existe
+				Vertice vDest = null;
+				for (Vertice v : this.arrayVerts) 
+					if (v.id() == Integer.parseInt(strDest)) {
+						vDest = v;
+						break;
+					}
+				// Se não existir, criar um novo
+				if (vDest == null) {
+					vDest = new Vertice(Integer.parseInt(strDest));
+					this.arrayVerts.add(vDest);
+				}
+				
+				// Criar uma aresta nova
+				this.arrayAres.add(new Aresta(vOrigem, vDest, Integer.parseInt(strPeso)));
 			}
 		}
 	}
 
-	// 3 de 10 feitos
+	// 0 de 10 feitos
 	@Override
 	public int grauDoVertice(Vertice vertice) throws Exception {
 		int grau = 0;
 
-		for (int i=0; i<this.numAres; i++)
-			if (this.matAres[i][vertice.id()] > 0) grau++;
+		for (int i=0; i<this.numVerts; i++)
+			if (this.matAres[vertice.id()][i] > 0) grau++;
 				
 		return grau;
 	}
@@ -77,55 +129,86 @@ public class MatrizInc implements Grafo {
 		return this.numVerts;
 	}	
 	@Override
-	public int numeroDeArestas() {
-		return this.numAres;
+	public int numeroDeArestas() {		
+		return this.arrayAres.size();
 	}
 	
 	@Override
 	public void adicionarAresta(Vertice origem, Vertice destino) throws Exception {
-		this.matAres[origem.id()][destino.id()] = 1;
+		this.numAres++;
+		double[][] newArray = new double[this.numVerts][this.numAres];
+		
+		for (int i=0; i<this.numVerts; i++)
+			for (int j=0; j<this.numAres-1; j++)
+				newArray[i][j] = this.matAres[i][j];
+		
+		this.matAres[destino.id()][this.numAres-1] = 1;
+		this.arrayAres.add(new Aresta(origem, destino));
 	}
 	
 	@Override
 	public void adicionarAresta(Vertice origem, Vertice destino, double peso) throws Exception {
-		this.matAres[origem.id()][destino.id()] = peso;		
+		this.numAres++;
+		double[][] newArray = new double[this.numVerts][this.numAres];
+		
+		for (int i=0; i<this.numVerts; i++)
+			for (int j=0; j<this.numAres-1; j++)
+				newArray[i][j] = this.matAres[i][j];
+		
+		this.matAres[destino.id()][this.numAres-1] = 1;
+		this.arrayAres.add(new Aresta(origem, destino, peso));
 	}
 	
 	@Override
 	public boolean existeAresta(Vertice origem, Vertice destino) {
 		if (this.matAres[origem.id()][destino.id()] > 0) return true;
 		else return false;
-	}
-		
+	}	
+	
 	@Override
 	public ArrayList<Vertice> adjacentesDe(Vertice vertice) throws Exception {
 		ArrayList<Vertice> listVerts = new ArrayList<Vertice>();
 		
 		for (int i=0; i<this.numVerts; i++)
-			if (this.matAres[vertice.id()][i] > 0) listVerts.add(new Vertice(i));
+			if (this.matAres[vertice.id()][i] > 0) listVerts.add(this.arrayVerts.get(i));
 				
-		return null;
+		return listVerts;
 	}
 	
 	@Override
 	public void setarPeso(Vertice origem, Vertice destino, double peso) throws Exception {
+		try {
+			int vO = this.arrayVerts.indexOf(origem);
+			int vD = this.arrayVerts.indexOf(destino);
+			if (vO == -1 || vD == -1) vO = 1/0;
+			for (int i=0; i<this.numAres; i++) {
+				Aresta a = this.arrayAres.get(i);
+				if (a.destino() == destino && a.origem() == origem) {
+					a.setarPeso(peso);
+					this.matAres[destino.id()][i] = peso;
+				}
+			}		
+		} catch (Exception e) {
+			System.err.println("Erro: Pelo menos um dos vértice snão existe.");
+		}
 		this.matAres[origem.id()][destino.id()] = peso;
 		
 	}
 	
 	@Override
 	public ArrayList<Vertice> vertices() {
-		ArrayList<Vertice> listVert = new ArrayList<Vertice>();
-		
-		for (int i=0; i<this.numVerts; i++)
-			listVert.add(new Vertice(i));
-		
-		return listVert;
-	}	
+		return this.arrayVerts;
+	}		
 	
 	@Override
 	public ArrayList<Aresta> arestasEntre(Vertice origem, Vertice destino) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Aresta> listAres = new ArrayList<Aresta>();
+		
+		for (Aresta a : this.arrayAres)
+			if (a.destino() == destino && a.origem() == origem) listAres.add(a);
+		
+		return listAres;
 	}
+
+	
 }
