@@ -1,7 +1,6 @@
 package implementacoes;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import grafos.Aresta;
 import grafos.Grafo;
@@ -162,5 +161,4 @@ public class MatrizAdj implements Grafo {
 		return listAres;
 	}
 
-	
 }
