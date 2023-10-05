@@ -44,10 +44,10 @@ public class ListaAdj implements Grafo {
 		String saida = "";
 		
 		for (int i=0; i<this.numVerts; i++) {
+			saida += this.arrayVerts.get(i).id();
 			for (int j=0; j<this.listVerts.get(i).size(); j++) {
 				NoLista n = this.listVerts.get(i).get(j);
-				saida += 
-						" -> "+	n.destino.id() + " - " + n.peso;
+				saida += " -> " + n.destino.id() + " - " + n.peso;
 			} saida += "\n";
 		}
 		
@@ -62,7 +62,8 @@ public class ListaAdj implements Grafo {
 		this.arrayAres = new ArrayList<Aresta>();
 		this.arrayVerts = new ArrayList<Vertice>();
 		
-		for (int i=1; i<=this.numVerts; i++) {			
+		for (int i=1; i<=this.numVerts; i++) {		
+			this.listVerts.add(new ArrayList<NoLista>());
 			String[] linha = entrada.get(i).split(" ");
 			// Ver se o vértice já existe
 			Vertice vOrigem = null;
@@ -115,14 +116,14 @@ public class ListaAdj implements Grafo {
 	}
 	@Override
 	public void adicionarAresta(Vertice origem, Vertice destino, double peso) throws Exception {NoLista n = new NoLista(destino, peso);
-		int aux = findVert(destino);
+		int aux = findVert(origem);
 
 		this.listVerts.get(aux).add(n);
 		this.arrayAres.add(new Aresta(origem, destino, peso));	
 	}
 	@Override
 	public boolean existeAresta(Vertice origem, Vertice destino) {
-		int aux = findVert(destino);
+		int aux = findVert(origem);
 		
 		for (NoLista n : this.listVerts.get(aux))
 			if (n.destino == destino) return true;
@@ -131,13 +132,7 @@ public class ListaAdj implements Grafo {
 	}
 	@Override
 	public int grauDoVertice(Vertice vertice) throws Exception {
-		int aux = 0;
-		for (int i=0; i<this.numVerts; i++) 
-			if (this.arrayVerts.get(i) == vertice) {
-				aux = i;
-				break;
-			}
-				
+		int aux = findVert(vertice);				
 		return this.listVerts.get(aux).size();
 	}
 	@Override
