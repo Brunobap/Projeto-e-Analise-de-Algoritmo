@@ -3,10 +3,10 @@ package implementacoes;
 import grafos.Vertice;
 
 public class NoLista {
-	public int peso;
+	public double peso;
 	public Vertice destino;
 	
-	public NoLista(Vertice destino, int peso) {
+	public NoLista(Vertice destino, double peso) {
 		this.destino = destino;
 		this.peso = peso;
 	}

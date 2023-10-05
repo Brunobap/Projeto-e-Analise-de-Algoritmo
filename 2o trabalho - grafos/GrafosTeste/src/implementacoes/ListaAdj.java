@@ -9,7 +9,7 @@ import grafos.Vertice;
 public class ListaAdj implements Grafo {
 		
 	private int numVerts;
-	private ArrayList<ArrayList<ArrayList<NoLista>>> listVerts;
+	private ArrayList<ArrayList<NoLista>> listVerts;
 	private ArrayList<Vertice> arrayVerts;
 	private ArrayList<Aresta> arrayAres;
 	
@@ -44,10 +44,10 @@ public class ListaAdj implements Grafo {
 		String saida = "";
 		
 		for (int i=0; i<this.numVerts; i++) {
-			for (int j=0; j<this.numVerts; j++) {
-				saida += " ";
-				if (this.listVerts[i][j] < 10) saida += "0";
-				saida += this.listVerts[i][j];
+			for (int j=0; j<this.listVerts.get(i).size(); j++) {
+				NoLista n = this.listVerts.get(i).get(j);
+				saida += 
+						" -> "+	n.destino.id() + " - " + n.peso;
 			} saida += "\n";
 		}
 		
@@ -58,9 +58,10 @@ public class ListaAdj implements Grafo {
 	public ListaAdj(ArrayList<String> entrada) {
 		this.setNumVerts(Integer.parseInt(entrada.get(0)));
 		
-		this.listVerts = new double[this.numVerts][this.numVerts];
+		this.listVerts = new ArrayList<ArrayList<NoLista>>();
 		this.arrayAres = new ArrayList<Aresta>();
 		this.arrayVerts = new ArrayList<Vertice>();
+		
 		for (int i=1; i<=this.numVerts; i++) {			
 			String[] linha = entrada.get(i).split(" ");
 			// Ver se o vértice já existe
@@ -79,7 +80,6 @@ public class ListaAdj implements Grafo {
 			for (int j=1; j<linha.length; j++) {
 				String strDest = linha[j].substring(0,linha[j].indexOf('-'));
 				String strPeso = linha[j].substring(linha[j].indexOf('-')+1, linha[j].indexOf(';'));
-				this.listVerts[Integer.parseInt(strDest)][i-1] = Integer.parseInt(strPeso);
 				
 				// Ver se o vértice já existe
 				Vertice vDest = null;
@@ -96,6 +96,10 @@ public class ListaAdj implements Grafo {
 				
 				// Criar uma aresta nova
 				this.arrayAres.add(new Aresta(vOrigem, vDest, Integer.parseInt(strPeso)));
+				
+				// Botar na lista
+				NoLista n = new NoLista(vDest, Integer.parseInt(strPeso));
+				this.listVerts.get(i-1).add(n);
 			}
 		}
 	}
@@ -103,27 +107,38 @@ public class ListaAdj implements Grafo {
 	// 10 de 10 feitos
 	@Override
 	public void adicionarAresta(Vertice origem, Vertice destino) throws Exception {
-		this.listVerts[destino.id()][origem.id()] = 1;
+		NoLista n = new NoLista(destino, 1);
+		int aux = findVert(origem);
+
+		this.listVerts.get(aux).add(n);
 		this.arrayAres.add(new Aresta(origem, destino));
 	}
 	@Override
-	public void adicionarAresta(Vertice origem, Vertice destino, double peso) throws Exception {
-		this.listVerts[origem.id()][destino.id()] = peso;
+	public void adicionarAresta(Vertice origem, Vertice destino, double peso) throws Exception {NoLista n = new NoLista(destino, peso);
+		int aux = findVert(destino);
+
+		this.listVerts.get(aux).add(n);
 		this.arrayAres.add(new Aresta(origem, destino, peso));	
 	}
 	@Override
 	public boolean existeAresta(Vertice origem, Vertice destino) {
-		if (this.listVerts[origem.id()][destino.id()] > 0) return true;
-		else return false;
+		int aux = findVert(destino);
+		
+		for (NoLista n : this.listVerts.get(aux))
+			if (n.destino == destino) return true;
+		
+		return false;
 	}
 	@Override
 	public int grauDoVertice(Vertice vertice) throws Exception {
-		int grau = 0;
-
-		for (int i=0; i<this.numVerts; i++)
-			if (this.listVerts[vertice.id()][i] > 0) grau++;
+		int aux = 0;
+		for (int i=0; i<this.numVerts; i++) 
+			if (this.arrayVerts.get(i) == vertice) {
+				aux = i;
+				break;
+			}
 				
-		return grau;
+		return this.listVerts.get(aux).size();
 	}
 	@Override
 	public int numeroDeVertices() {
@@ -137,15 +152,22 @@ public class ListaAdj implements Grafo {
 	public ArrayList<Vertice> adjacentesDe(Vertice vertice) throws Exception {
 		ArrayList<Vertice> listVerts = new ArrayList<Vertice>();
 		
-		for (int i=0; i<this.numVerts; i++)
-			if (this.listVerts[vertice.id()][i] > 0) listVerts.add(this.arrayVerts.get(i));
+		int posV = findVert(vertice);
+		
+		for (NoLista n : this.listVerts.get(posV))
+			listVerts.add(n.destino);
 				
 		return listVerts;
 	}
 	@Override
 	public void setarPeso(Vertice origem, Vertice destino, double peso) throws Exception {
-		this.listVerts[origem.id()][destino.id()] = peso;
+		int aux = findVert(origem);
 		
+		for (NoLista n : this.listVerts.get(aux))
+			if (n.destino == destino) {
+				n.peso = peso;
+				return;
+			}
 	}
 	@Override
 	public ArrayList<Vertice> vertices() {
@@ -161,4 +183,14 @@ public class ListaAdj implements Grafo {
 		return listAres;
 	}
 
+	
+	// Função utilitária: pega o indice de um vertice no array de vertices
+	private int findVert(Vertice v) {
+		int aux = 0;
+		for (int i=0; i<this.numVerts; i++) 
+			if (this.arrayVerts.get(i) == v) 
+				return i;
+		
+		return -1;
+	}
 }
