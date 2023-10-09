@@ -31,10 +31,36 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 		return null;
 	}
 
+	/* Modelos:
+	 * DFS(G)
+	 * 		para cada vértice u ∈ V[G]
+	 * 			cor[u] <- BRANCO
+	 * 		tempo <- 0
+	 * 		para cada vértice u ∈ V[G]
+	 * 			se cor[u] = BRANCO
+	 * 				DFS_VISIT(u)
+	 * 
+	 * DFS_VISIT(u)
+	 * 		cor[u] = CINZA
+	 * 		tempo = tempo + 1
+	 * 		d[u] = tempo
+	 * 		para cada vértice v ∈ Adj(u)
+	 * 			se cor[v] = BRANCO
+	 * 				DFS_VISIT(v)
+	 * 		cor[u] = PRETO
+	 * 		tempo = tempo + 1
+	 * 		f[u] = tempo
+	 */
 	@Override
 	public Collection<Aresta> buscaEmProfundidade(Grafo g) {
-		// TODO Auto-generated method stub
+		for (Vertice v : g.vertices())
+			v.setCor('b');
+		
+		
 		return null;
+	}
+	private void BEP_Visit(Vertice u) {
+		
 	}
 
 	@Override
