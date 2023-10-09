@@ -1,0 +1,9 @@
+Até a minha data de corte em setembro de 2021, a biblioteca Shapely não usa um único algoritmo fixo para determinar a propriedade `convex_hull`. Em vez disso, o algoritmo utilizado para calcular a envoltória convexa pode depender da versão específica do GEOS (Geometry Engine - Open Source) que é usado como o backend da biblioteca Shapely.
+
+O GEOS é uma biblioteca C++ de geometria computacional que oferece muitas operações geométricas, incluindo o cálculo da envoltória convexa. As implementações desses algoritmos podem variar de acordo com a versão do GEOS e as otimizações que foram feitas.
+
+Na maioria dos casos, o algoritmo de Graham Scan é frequentemente usado para calcular a envoltória convexa, mas outras abordagens, como o algoritmo de Jarvis March (também conhecido como Gift Wrapping), podem ser usadas dependendo da implementação específica.
+
+Se você estiver usando a biblioteca Shapely, não precisa se preocupar muito com os detalhes do algoritmo subjacente, a menos que tenha necessidades muito específicas. A propriedade `convex_hull` retornará uma nova geometria que representa a envoltória convexa dos pontos ou geometrias de entrada.
+
+Certifique-se de verificar a documentação mais atualizada da biblioteca Shapely e do GEOS para obter informações precisas sobre as versões mais recentes e os algoritmos específicos utilizados.
