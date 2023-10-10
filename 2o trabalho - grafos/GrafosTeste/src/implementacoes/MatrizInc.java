@@ -187,7 +187,7 @@ public class MatrizInc implements Grafo {
 				}
 			}		
 		} catch (Exception e) {
-			System.err.println("Erro: Pelo menos um dos vértice snão existe.");
+			System.err.println(e);
 		}
 		this.matAres[origem.id()][destino.id()] = peso;
 		
@@ -205,6 +205,4 @@ public class MatrizInc implements Grafo {
 		
 		return listAres;
 	}
-
-	
 }

@@ -79,8 +79,7 @@ public class MatrizAdj implements Grafo {
 			for (int j=1; j<linha.length; j++) {
 				String strDest = linha[j].substring(0,linha[j].indexOf('-'));
 				String strPeso = linha[j].substring(linha[j].indexOf('-')+1, linha[j].indexOf(';'));
-				this.matVerts[Integer.parseInt(strDest)][i-1] = Integer.parseInt(strPeso);
-				
+
 				// Ver se o vértice já existe
 				Vertice vDest = null;
 				for (Vertice v : this.arrayVerts) 
@@ -94,13 +93,15 @@ public class MatrizAdj implements Grafo {
 					this.arrayVerts.add(vDest);
 				}
 				
+				this.matVerts[i-1][this.arrayVerts.indexOf(vDest)] = Integer.parseInt(strPeso);				
+				
 				// Criar uma aresta nova
 				this.arrayAres.add(new Aresta(vOrigem, vDest, Integer.parseInt(strPeso)));
 			}
 		}
 	}
 
-	// 10 de 10 feitos
+	// Funções da interface
 	@Override
 	public void adicionarAresta(Vertice origem, Vertice destino) throws Exception {
 		this.matVerts[destino.id()][origem.id()] = 1;
@@ -135,10 +136,11 @@ public class MatrizAdj implements Grafo {
 	}
 	@Override
 	public ArrayList<Vertice> adjacentesDe(Vertice vertice) throws Exception {
+		int idVert = this.arrayVerts.indexOf(vertice);
 		ArrayList<Vertice> listVerts = new ArrayList<Vertice>();
 		
 		for (int i=0; i<this.numVerts; i++)
-			if (this.matVerts[vertice.id()][i] > 0) listVerts.add(this.arrayVerts.get(i));
+			if (this.matVerts[idVert][i] > 0) listVerts.add(this.arrayVerts.get(i));
 				
 		return listVerts;
 	}
@@ -160,5 +162,4 @@ public class MatrizAdj implements Grafo {
 		
 		return listAres;
 	}
-
 }

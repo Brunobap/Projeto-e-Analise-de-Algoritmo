@@ -23,18 +23,34 @@ public class Vertice {
     private char cor;
     
     /* 
+     * Informações para Busca em Profundidade
      * d: marcador do instante que o vértice c foi descoberto;
      * f: marcador do instante que o fecho transitivo do vértice c foi totalmente visitado (considerado então finalizado).
      */
     private int d, f;
     
-    // 
+    /*
+     * Informações para Busca em Largura
+     * pi - Vértice que é pai desse
+     * dist - Distância desde a origem (em arestas)
+     */
+    private Vertice pi;
+    private int dist;
+    
     
     public Vertice( int v ){
+    	// Info geral
         this.vertice = v;
-        this.setCor('v');
+        this.cor = 'v';
+        
+        // Info Busca em Prof
         this.d = -1;
         this.f = -1;
+        
+        // Info Busca em Larg
+        this.pi = null;
+        this.dist = -1;
+        
     }
 
     public int id() {
@@ -65,6 +81,22 @@ public class Vertice {
 
 	public void setF(int f) {
 		this.f = f;
+	}
+
+	public Vertice getPi() {
+		return pi;
+	}
+
+	public void setPi(Vertice pi) {
+		this.pi = pi;
+	}
+
+	public int getDist() {
+		return dist;
+	}
+
+	public void setDist(int dist) {
+		this.dist = dist;
 	}
     
 }

@@ -7,6 +7,9 @@ import grafos.*;
 
 public class Algoritmos implements AlgoritmosEmGrafos{
 
+	private int tempo;
+	private Grafo g;
+	
 	@Override
 	public Grafo carregarGrafo(String path, TipoDeRepresentacao t) throws Exception {
 		FileManager file = new FileManager();
@@ -25,10 +28,69 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 		return g;
 	}
 
+	/*
+	 * Modelo:
+	 * BFS(G,s)
+	 * 		para cada vertice u e V[G] - {s}
+	 * 			cor[u] = BRANCO
+	 * 			d[u] = inf
+	 * 			pi[u] = null
+	 * 		cor[s] = CINZA
+	 * 		d[s] = 0
+	 * 		pi[s] = null
+	 * 		Q = novaFila()
+	 * 		ENFILEIRA(Q,s)
+	 * 		enquanto !vazia(Q)
+	 * 			u = DESINFILEIRA(Q)
+	 * 			para cada v = Adj[u]
+	 * 				se cor[v] = BRANCO
+	 * 					cor[v] = CINZA
+	 * 					d[v] = d[u] + 1
+	 * 					pi[v] = u
+	 * 					ENFILEIRA(Q,v)
+	 * 		cor[u] = PRETO
+	 */
 	@Override
 	public Collection<Aresta> buscaEmLargura(Grafo g) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			ArrayList<Aresta> arvRes = new ArrayList<Aresta>();
+			
+			for (Vertice u : g.vertices()) {
+				u.setCor('b');
+				u.setDist(Integer.MAX_VALUE);
+				u.setPi(null);
+			}
+			
+			// Marcar as informações da origem
+			Vertice origem = g.vertices().get(0);
+			origem.setCor('c');
+			origem.setDist(0);
+			origem.setPi(null);
+			
+			// Começar a fila de atendimento
+			ArrayList<Vertice> Q = new ArrayList<Vertice>();
+			Q.add(origem);
+			
+			Vertice aux;
+			while (!Q.isEmpty()) {
+				aux = Q.remove(0);
+				for (Vertice v : g.adjacentesDe(aux)) 
+					if (v.getCor() == 'b') {
+						v.setCor('c');
+						v.setDist(aux.getDist()+1);
+						v.setPi(aux);
+						arvRes.add(new Aresta(aux,v));
+						Q.add(v);
+					}
+				aux.setCor('p');
+			}
+			
+			return arvRes;
+			
+		} catch (Exception e) {
+			System.err.println(e);
+			return null;
+		}
 	}
 
 	/* Modelos:
@@ -53,14 +115,49 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 	 */
 	@Override
 	public Collection<Aresta> buscaEmProfundidade(Grafo g) {
+		this.g = g;
+		
+		ArrayList<Aresta> arvFin = null;
+		
 		for (Vertice v : g.vertices())
 			v.setCor('b');
 		
+		tempo = 0;					
 		
-		return null;
+		for(Vertice v : g.vertices())
+			if (v.getCor() == 'b')
+				arvFin = BEP_Visit(v);
+		
+		// Final liberar a memória do algoritmo
+		this.g = null;
+	
+		return arvFin;
 	}
-	private void BEP_Visit(Vertice u) {
-		
+	private ArrayList<Aresta> BEP_Visit(Vertice u) {
+		try {
+			ArrayList<Aresta> arvRes = new ArrayList<Aresta>();
+			
+			u.setCor('c');
+			
+			tempo++;
+			u.setD(tempo);
+			
+			for (Vertice adj : this.g.adjacentesDe(u))
+				if (adj.getCor() == 'b') {
+					arvRes.add(new Aresta(u,adj));
+					arvRes.addAll(BEP_Visit(adj));
+				}
+					
+			u.setCor('p');
+			
+			tempo++;
+			u.setF(tempo);
+			
+			return arvRes;
+		} catch (Exception e) {
+			System.err.println(e);
+			return null;
+		}
 	}
 
 	@Override
