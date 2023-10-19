@@ -98,4 +98,5 @@ public interface Grafo {
      */
     public ArrayList<Vertice> vertices();
     
+    public ArrayList<Aresta> arestasOrdenadas();
 }

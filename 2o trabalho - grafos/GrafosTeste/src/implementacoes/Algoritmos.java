@@ -29,7 +29,7 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 	}
 
 	/*
-	 * Modelo:
+	 * Modelo BEL:
 	 * BFS(G,s)
 	 * 		para cada vertice u e V[G] - {s}
 	 * 			cor[u] = BRANCO
@@ -93,7 +93,8 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 		}
 	}
 
-	/* Modelos:
+	/* 
+	 * Modelos BEP:
 	 * DFS(G)
 	 * 		para cada vértice u ∈ V[G]
 	 * 			cor[u] <- BRANCO
@@ -121,6 +122,29 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 		
 		for (Vertice v : g.vertices())
 			v.setCor('b');
+		
+		tempo = 0;					
+		
+		for(Vertice v : g.vertices())
+			if (v.getCor() == 'b')
+				arvFin = BEP_Visit(v);
+		
+		// Final liberar a memória do algoritmo
+		this.g = null;
+	
+		return arvFin;
+	}
+	public Collection<Aresta> buscaEmProfundidade(Grafo g, Vertice origem) {
+		this.g = g;
+		
+		ArrayList<Vertice> vertices = g.vertices();
+		ArrayList<Aresta> arvFin = null;
+		
+		for (Vertice v : g.vertices())
+			v.setCor('b');
+		
+		vertices.remove(origem);
+		vertices.add(0, origem);
 		
 		tempo = 0;					
 		
@@ -172,9 +196,45 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 		return false;
 	}
 
+	/*
+	 * Modelo AGM_Kruskall:
+	 * AGM_Kruskall(G(V,A), w)
+	 * 		X = {}
+	 * 		para cada vértice v ∈ V faça
+	 * 			criarConjunto(v)
+	 * 		fim para
+	 * 		A' = "ordenar as arestas de A por peso crescente"
+	 * 		para cada aresta(u,v) ∈ A' faça
+	 * 			se conjuntpDe(u) != conjuntoDe(v) então
+	 * 				X = X U {(u,v)}
+	 * 				aplicarUnião(u,v)
+	 * 			fim se
+	 * 		fim para
+	 * 		retorne X
+	 * fim.   
+	 */
 	@Override
 	public Collection<Aresta> agmUsandoKruskall(Grafo g) {
-		// TODO Auto-generated method stub
+		ArrayList<Aresta> X = new ArrayList<Aresta>();
+		ArrayList<Vertice> V = g.vertices();
+		
+		ArrayList<Collection<Aresta>> arvores = new ArrayList<Collection<Aresta>>();
+		for (Vertice v : V)
+			arvores.add(buscaEmProfundidade(g, v));
+		
+		// TODO: implementações dessa função de "g";
+		ArrayList<Aresta> AOrd = g.arestasOrdenadas();
+		for (Aresta a : AOrd) {
+			Vertice ori = a.origem(), dest = a.destino();
+			if (arvores.get(V.indexOf(ori)) != arvores.get(V.indexOf(dest))) {
+				X.add(a);
+			}		
+		}
+		
+		return X;
+	}
+	private static ArrayList<Aresta> ordenarArestas(ArrayList<Aresta> a){
+		
 		return null;
 	}
 

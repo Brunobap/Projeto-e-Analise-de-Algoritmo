@@ -188,4 +188,9 @@ public class ListaAdj implements Grafo {
 		
 		return -1;
 	}
+	@Override
+	public ArrayList<Aresta> arestasOrdenadas() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
