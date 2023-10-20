@@ -134,29 +134,6 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 	
 		return arvFin;
 	}
-	public Collection<Aresta> buscaEmProfundidade(Grafo g, Vertice origem) {
-		this.g = g;
-		
-		ArrayList<Vertice> vertices = g.vertices();
-		ArrayList<Aresta> arvFin = null;
-		
-		for (Vertice v : g.vertices())
-			v.setCor('b');
-		
-		vertices.remove(origem);
-		vertices.add(0, origem);
-		
-		tempo = 0;					
-		
-		for(Vertice v : g.vertices())
-			if (v.getCor() == 'b')
-				arvFin = BEP_Visit(v);
-		
-		// Final liberar a memória do algoritmo
-		this.g = null;
-	
-		return arvFin;
-	}
 	private ArrayList<Aresta> BEP_Visit(Vertice u) {
 		try {
 			ArrayList<Aresta> arvRes = new ArrayList<Aresta>();
@@ -215,29 +192,40 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 	 */
 	@Override
 	public Collection<Aresta> agmUsandoKruskall(Grafo g) {
+		// Criar o conjunto de arestas
 		ArrayList<Aresta> X = new ArrayList<Aresta>();
-		ArrayList<Vertice> V = g.vertices();
 		
-		ArrayList<Collection<Aresta>> arvores = new ArrayList<Collection<Aresta>>();
-		for (Vertice v : V)
-			arvores.add(buscaEmProfundidade(g, v));
+		// Criar as arvores de cada vértice
+		ArrayList<Vertice> V = g.vertices();		
+		ArrayList<ArrayList<Vertice>> arvores = new ArrayList<ArrayList<Vertice>>();
+		for (Vertice v : V) {
+			ArrayList<Vertice> newConj = new ArrayList<Vertice>();
+			newConj.add(v);
+			arvores.add(newConj);
+		}
 		
-		// TODO: implementações dessa função de "g";
-		ArrayList<Aresta> AOrd = g.arestasOrdenadas();
+		// Ordenar as arestas por peso
+		ArrayList<Aresta> AOrd = arestasOrdenadas(g.getArrayAres());
+		
+		// Verificação, adição e união
 		for (Aresta a : AOrd) {
 			Vertice ori = a.origem(), dest = a.destino();
 			if (arvores.get(V.indexOf(ori)) != arvores.get(V.indexOf(dest))) {
-				X.add(a);
+				X.add(a);				
+				// TODO: "aplicarUniao(u,v)"???
+				
 			}		
 		}
 		
 		return X;
 	}
-	private static ArrayList<Aresta> ordenarArestas(ArrayList<Aresta> a){
+	private static ArrayList<Aresta> arestasOrdenadas(ArrayList<Aresta> original){
+		ArrayList<Aresta> ordenadas = new ArrayList<Aresta>();
+		ordenadas.addAll(original);
 		
-		return null;
+		return ordenadas;
 	}
-
+	
 	@Override
 	public double custoDaArvoreGeradora(Grafo g, Collection<Aresta> arestas) throws Exception {
 		// TODO Auto-generated method stub

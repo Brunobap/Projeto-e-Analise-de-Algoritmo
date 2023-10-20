@@ -181,16 +181,10 @@ public class ListaAdj implements Grafo {
 	
 	// Função utilitária: pega o indice de um vertice no array de vertices
 	private int findVert(Vertice v) {
-		int aux = 0;
 		for (int i=0; i<this.numVerts; i++) 
 			if (this.arrayVerts.get(i) == v) 
 				return i;
 		
 		return -1;
-	}
-	@Override
-	public ArrayList<Aresta> arestasOrdenadas() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

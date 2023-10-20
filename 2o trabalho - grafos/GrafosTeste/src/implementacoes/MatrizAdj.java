@@ -162,9 +162,4 @@ public class MatrizAdj implements Grafo {
 		
 		return listAres;
 	}
-	@Override
-	public ArrayList<Aresta> arestasOrdenadas() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

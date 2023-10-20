@@ -205,9 +205,4 @@ public class MatrizInc implements Grafo {
 		
 		return listAres;
 	}
-	@Override
-	public ArrayList<Aresta> arestasOrdenadas() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

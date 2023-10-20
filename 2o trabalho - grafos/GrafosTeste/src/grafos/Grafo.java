@@ -98,5 +98,5 @@ public interface Grafo {
      */
     public ArrayList<Vertice> vertices();
     
-    public ArrayList<Aresta> arestasOrdenadas();
+    public ArrayList<Aresta> getArrayAres();
 }
