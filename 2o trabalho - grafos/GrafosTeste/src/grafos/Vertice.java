@@ -27,7 +27,7 @@ public class Vertice {
      * d: marcador do instante que o vértice c foi descoberto;
      * f: marcador do instante que o fecho transitivo do vértice c foi totalmente visitado (considerado então finalizado).
      */
-    private int d, f;
+    private double d, f;
     
     /*
      * Informações para Busca em Largura
@@ -35,7 +35,7 @@ public class Vertice {
      * dist - Distância desde a origem (em arestas)
      */
     private Vertice pi;
-    private int dist;
+    private double dist;
     
     
     public Vertice( int v ){
@@ -67,15 +67,15 @@ public class Vertice {
 		this.cor = cor;
 	}
 
-	public int getD() {
+	public double getD() {
 		return d;
 	}
 
-	public void setD(int d) {
-		this.d = d;
+	public void setD(double e) {
+		this.d = e;
 	}
 
-	public int getF() {
+	public double getF() {
 		return f;
 	}
 
@@ -91,12 +91,12 @@ public class Vertice {
 		this.pi = pi;
 	}
 
-	public int getDist() {
+	public double getDist() {
 		return dist;
 	}
 
-	public void setDist(int dist) {
-		this.dist = dist;
+	public void setDist(double e) {
+		this.dist = e;
 	}
     
 }

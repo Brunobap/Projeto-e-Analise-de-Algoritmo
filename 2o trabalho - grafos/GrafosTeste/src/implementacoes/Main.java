@@ -33,9 +33,13 @@ public class Main {
 			Collection<Aresta> DFS = alg.buscaEmProfundidade(g);
 			System.out.println(DFS);		
 			
-			//2o Algoritmo: Bsuca em Largura
+			//2o Algoritmo: Busca em Largura
 			Collection<Aresta> BFS = alg.buscaEmLargura(g);
 			System.out.println(BFS);
+			
+			//3o Algoritmo: AGM de Kruskall
+			Collection<Aresta> AGM = alg.agmUsandoKruskall(g);
+			System.out.println(AGM);
 			
 		} catch (Exception e) {
 			System.err.println(e);

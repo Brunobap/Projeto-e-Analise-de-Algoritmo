@@ -77,7 +77,7 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 				for (Vertice v : g.adjacentesDe(aux)) 
 					if (v.getCor() == 'b') {
 						v.setCor('c');
-						v.setDist(aux.getDist()+1);
+						v.setDist(aux.getDist()+1.0);
 						v.setPi(aux);
 						arvRes.add(new Aresta(aux,v));
 						Q.add(v);
@@ -167,9 +167,25 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 		return null;
 	}
 
+	// Usa BEP mas retorna true quando 2 vértices cinza se encontram e false se não se cruzarem
 	@Override
 	public boolean existeCiclo(Grafo g) {
-		// TODO Auto-generated method stub
+		this.g = g;
+		
+		ArrayList<Aresta> arvFin = null;
+		
+		for (Vertice v : g.vertices())
+			v.setCor('b');
+		
+		tempo = 0;					
+		
+		for(Vertice v : g.vertices())
+			if (v.getCor() == 'b') arvFin = BEP_Visit(v);
+			else return true;
+		
+		// Final liberar a memória do algoritmo
+		this.g = null;
+	
 		return false;
 	}
 
@@ -210,10 +226,15 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 		// Verificação, adição e união
 		for (Aresta a : AOrd) {
 			Vertice ori = a.origem(), dest = a.destino();
-			if (arvores.get(V.indexOf(ori)) != arvores.get(V.indexOf(dest))) {
+			ArrayList<Vertice> arvOri = null, arvDest = null;
+			for (ArrayList<Vertice> arv : arvores) {
+				if (arv.contains(ori)) arvOri = arv;
+				if (arv.contains(dest)) arvDest = arv;
+			}
+			if (arvOri != null && arvDest != null && arvOri != arvDest) {
 				X.add(a);				
-				// TODO: "aplicarUniao(u,v)"???
-				
+				arvOri.addAll(arvDest);
+				arvores.remove(arvDest);
 			}		
 		}
 		
@@ -221,7 +242,20 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 	}
 	private static ArrayList<Aresta> arestasOrdenadas(ArrayList<Aresta> original){
 		ArrayList<Aresta> ordenadas = new ArrayList<Aresta>();
-		ordenadas.addAll(original);
+		for (int i=0; i<original.size(); i++) ordenadas.add(null);
+		
+		for (Aresta a : original) {
+			int menores = 0;
+			for (Aresta j : original) {
+				if (a!=j) {
+					double pI = a.peso(), pJ = j.peso();
+					if (pI > pJ) menores++;
+				}
+			}			
+			while (ordenadas.get(menores)!=null && ordenadas.get(menores).peso()==a.peso()) menores++;
+			ordenadas.remove(menores);
+			ordenadas.add(menores, a);
+		}
 		
 		return ordenadas;
 	}
@@ -238,10 +272,66 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 		return false;
 	}
 
+	/*
+	 * Modelos de CaminhoCurto-BellmanFord:
+	 * INICIALIZA (G = (V,A), s)
+	 * 		para cada v ∈ V
+	 * 			d[v] = inf
+	 * 			pi[v] = null
+	 * 		fim para
+	 * 		d[s] = 0
+	 * fim
+	 * 
+	 * RELAXA (u,v,w)
+	 * 		se (d[v] < (d[u] + w(u,v)) então
+	 * 			d[v] = d[u] + w(u,v)
+	 * 			pi[v] = u
+	 * 		fim se
+	 * fim
+	 * 
+	 * BELLMAN_FORD (G = (V,A), w, s)
+	 * 		INICIALIZA(G,s)
+	 * 		para i de 1 a |V|-1
+	 * 			para cada aresta (u,v) ∈ A
+	 * 				RELAXA (u,v,w)
+	 * 			fim para
+	 * 		fim para
+	 *		para cada aresta (u,v) ∈ A
+	 *			se d[v] > d[u] + w[u,v]
+	 *				retorna falso
+	 *			fim se
+	 * 		fim para
+	 * 		retorna verdadeiro
+	 * fim
+	 */
 	@Override
 	public ArrayList<Aresta> caminhoMaisCurto(Grafo g, Vertice origem, Vertice destino) {
-		// TODO Auto-generated method stub
+		inicializa(g, origem);
+		
+		for (int i=0; i<g.vertices().size()-1; i++) {
+			for (Aresta a : g.getArrayAres()) 
+				relaxa(a.origem(), a.destino(), a);
+		}
+		
+		for (Aresta a : g.getArrayAres()) {
+			if (a.destino().getD() > a.origem().getD() + a.peso())
+				return null;
+		}
+		
 		return null;
+	}
+	private static void inicializa (Grafo g, Vertice s) {
+		for (Vertice v : g.vertices()) {
+			v.setD(Integer.MAX_VALUE);
+			v.setPi(null);
+		}
+		s.setD(0);
+	}
+	private static void relaxa (Vertice u, Vertice v, Aresta w) {
+		if (v.getD() < u.getD() + w.peso()) {
+			v.setD(u.getD() + w.peso());
+			v.setPi(u);
+		}
 	}
 
 	@Override
@@ -252,7 +342,7 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 
 	@Override
 	public boolean ehCaminho(ArrayList<Aresta> arestas, Vertice origem, Vertice destino) {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
