@@ -447,16 +447,94 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 		return true;
 	}
 
+	// Faz uma busca em profundidade mas retorna arestas que já existem
 	@Override
 	public Collection<Aresta> arestasDeArvore(Grafo g) {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Aresta> arvFin = new ArrayList<Aresta>();
+		
+		for (Vertice v : g.vertices())
+			v.setCor('b');
+		
+		tempo = 0;					
+		
+		for(Vertice v : g.vertices())
+			if (v.getCor() == 'b')
+				arvFin.addAll(BEP_Visit_AAr(v, g));
+	
+		return arvFin;
+	}
+	private ArrayList<Aresta> BEP_Visit_AAr(Vertice u, Grafo g) {
+		try {
+			ArrayList<Aresta> arvRes = new ArrayList<Aresta>();
+			
+			u.setCor('c');
+			
+			tempo++;
+			u.setD(tempo);
+			
+			for (Vertice adj : g.adjacentesDe(u)) {
+				for (Aresta a : g.arestasEntre(u, adj))
+					if (adj.getCor() == 'b') {
+						arvRes.add(a);
+					}
+				arvRes.addAll(BEP_Visit(adj, g));
+			}
+					
+			u.setCor('p');
+			
+			tempo++;
+			u.setF(tempo);
+			
+			return arvRes;
+		} catch (Exception e) {
+			System.err.println(e);
+			return null;
+		}
 	}
 
+	// Faz uma busca em profundidade mas retorna arestas
 	@Override
 	public Collection<Aresta> arestasDeRetorno(Grafo g) {
-		// TODO Auto-generated method stub
-		return null;
+ArrayList<Aresta> arvFin = new ArrayList<Aresta>();
+		
+		for (Vertice v : g.vertices())
+			v.setCor('b');
+		
+		tempo = 0;					
+		
+		for(Vertice v : g.vertices())
+			if (v.getCor() == 'b')
+				arvFin.addAll(BEP_Visit_AAv(v, g));
+	
+		return arvFin;
+	}
+	private ArrayList<Aresta> BEP_Visit_AAv(Vertice u, Grafo g) {
+		try {
+			ArrayList<Aresta> arvRes = new ArrayList<Aresta>();
+			
+			u.setCor('c');
+			
+			tempo++;
+			u.setD(tempo);
+			
+			for (Vertice adj : g.adjacentesDe(u)) {
+				for (Aresta a : g.arestasEntre(u, adj))
+					if (adj.getCor() == 'c') {
+						arvRes.add(a);
+					}
+				if (adj.getCor() == 'b') arvRes.addAll(BEP_Visit(adj, g));
+			}
+					
+			u.setCor('p');
+			
+			tempo++;
+			u.setF(tempo);
+			
+			return arvRes;
+		} catch (Exception e) {
+			System.err.println(e);
+			return null;
+		}
 	}
 
 	@Override
