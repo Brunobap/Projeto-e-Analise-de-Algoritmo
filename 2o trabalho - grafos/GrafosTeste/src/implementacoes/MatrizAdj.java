@@ -57,46 +57,32 @@ public class MatrizAdj implements Grafo {
 	// ctor da representação
 	public MatrizAdj(ArrayList<String> entrada) {
 		this.setNumVerts(Integer.parseInt(entrada.get(0)));
+		entrada.removeFirst();
 		
 		this.matVerts = new double[this.numVerts][this.numVerts];
 		this.arrayAres = new ArrayList<Aresta>();
 		this.arrayVerts = new ArrayList<Vertice>();
-		for (int i=1; i<=this.numVerts; i++) {			
-			String[] linha = entrada.get(i).split(" ");
-			// Ver se o vértice já existe
-			Vertice vOrigem = null;
-			for (Vertice v : this.arrayVerts) 
-				if (v.id() == Integer.parseInt(linha[0])) {
-					vOrigem = v;
-					break;
-				}
-			// Se não existir, criar um novo
-			if (vOrigem == null) {
-				vOrigem = new Vertice(Integer.parseInt(linha[0]));
-				this.arrayVerts.add(vOrigem);
-			}
+		
+		for (int i=0; i<this.numVerts; i++) {
+			this.arrayVerts.add(new Vertice(i));
+		}
+		
+		for (String l : entrada) {		
+			String[] linha = l.split(" ");
+			Vertice vOrigem = this.arrayVerts.get(Integer.parseInt(linha[0]));
 			
 			for (int j=1; j<linha.length; j++) {
 				String strDest = linha[j].substring(0,linha[j].indexOf('-'));
 				String strPeso = linha[j].substring(linha[j].indexOf('-')+1, linha[j].indexOf(';'));
-
-				// Ver se o vértice já existe
-				Vertice vDest = null;
-				for (Vertice v : this.arrayVerts) 
-					if (v.id() == Integer.parseInt(strDest)) {
-						vDest = v;
-						break;
-					}
-				// Se não existir, criar um novo
-				if (vDest == null) {
-					vDest = new Vertice(Integer.parseInt(strDest));
-					this.arrayVerts.add(vDest);
-				}
 				
-				this.matVerts[i-1][this.arrayVerts.indexOf(vDest)] = Integer.parseInt(strPeso);				
+				// Pegar o vérice de destino
+				Vertice vDest = this.arrayVerts.get(Integer.parseInt(strDest));
 				
 				// Criar uma aresta nova
 				this.arrayAres.add(new Aresta(vOrigem, vDest, Integer.parseInt(strPeso)));
+				
+				// Botar a aresta na matriz
+				this.matVerts[this.arrayVerts.indexOf(vOrigem)][this.arrayVerts.indexOf(vDest)] = Integer.parseInt(strPeso);				
 			}
 		}
 	}

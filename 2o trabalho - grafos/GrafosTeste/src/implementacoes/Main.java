@@ -1,12 +1,13 @@
 package implementacoes;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import grafos.*;
 
 public class Main {
 	public static void main(String[] args) {
-		String caminhoTeste = "Teste.txt";
+		String caminhoTeste = "Teste2.txt";
 		
 		/* Parte 1: Representações "cruas"
 		FileManager file = new FileManager();
@@ -40,6 +41,15 @@ public class Main {
 			//3o Algoritmo: AGM de Kruskall
 			Collection<Aresta> AGM = alg.agmUsandoKruskall(g);
 			System.out.println(AGM);
+			
+			// 4o Algoritmo: Caminho mais curto (com peso)
+			ArrayList<Aresta> CMC = alg.caminhoMaisCurto(g, g.vertices().get(0), g.vertices().get(10));
+			System.out.println(CMC);
+			
+			//5o Algoritmo: "É caminho?"
+			if (alg.ehCaminho(CMC, g.vertices().get(0), g.vertices().get(10))) 
+				System.out.println("Esse caminho é válido");
+			else System.out.println("Esse caminho não é válido");
 			
 		} catch (Exception e) {
 			System.err.println(e);

@@ -64,51 +64,40 @@ public class MatrizInc implements Grafo {
 	// ctor da representação
 	public MatrizInc(ArrayList<String> entrada) {
 		this.numVerts = Integer.parseInt(entrada.get(0));
+		entrada.removeFirst();
 		
 		this.numAres = 0;
-		for (int i=1; i<entrada.size(); i++)
-			this.numAres += entrada.get(i).split(" ").length-1;
+		for (String l : entrada)
+			this.numAres += l.split(" ").length-1;
 		
 		this.matAres = new double[this.numVerts][this.numAres];
 		this.arrayAres = new ArrayList<Aresta>();
 		this.arrayVerts = new ArrayList<Vertice>();
+		
+		
+		for (int i=0; i<this.numVerts; i++) {
+			this.arrayVerts.add(new Vertice(i));
+		}
+
 		int aux = 0;
-		for (int i=1; i<=this.numVerts; i++) {			
-			String[] linha = entrada.get(i).split(" ");
-			// Ver se o vértice já existe
-			Vertice vOrigem = null;
-			for (Vertice v : this.arrayVerts) 
-				if (v.id() == Integer.parseInt(linha[0])) {
-					vOrigem = v;
-					break;
-				}
-			// Se não existir, criar um novo
-			if (vOrigem == null) {
-				vOrigem = new Vertice(Integer.parseInt(linha[0]));
-				this.arrayVerts.add(vOrigem);
-			}
+		for (String l : entrada) {		
+			String[] linha = l.split(" ");
+			Vertice vOrigem = this.arrayVerts.get(Integer.parseInt(linha[0]));
 			
 			for (int j=1; j<linha.length; j++) {
 				String strDest = linha[j].substring(0,linha[j].indexOf('-'));
 				String strPeso = linha[j].substring(linha[j].indexOf('-')+1, linha[j].indexOf(';'));
-				this.matAres[Integer.parseInt(strDest)][aux] = Integer.parseInt(strPeso);
-				aux++;
 				
-				// Ver se o vértice já existe
-				Vertice vDest = null;
-				for (Vertice v : this.arrayVerts) 
-					if (v.id() == Integer.parseInt(strDest)) {
-						vDest = v;
-						break;
-					}
-				// Se não existir, criar um novo
-				if (vDest == null) {
-					vDest = new Vertice(Integer.parseInt(strDest));
-					this.arrayVerts.add(vDest);
-				}
+				// Pegar o vérice de destino
+				Vertice vDest = this.arrayVerts.get(Integer.parseInt(strDest));
 				
 				// Criar uma aresta nova
 				this.arrayAres.add(new Aresta(vOrigem, vDest, Integer.parseInt(strPeso)));
+				
+				// Botar a aresta na matriz
+				this.matAres[Integer.parseInt(strDest)][aux] = Integer.parseInt(strPeso);
+				this.matAres[vOrigem.id()][aux] = -Integer.parseInt(strPeso);
+				aux++;
 			}
 		}
 	}
@@ -118,7 +107,7 @@ public class MatrizInc implements Grafo {
 	public int grauDoVertice(Vertice vertice) throws Exception {
 		int grau = 0;
 
-		for (int i=0; i<this.numVerts; i++)
+		for (int i=0; i<this.numAres; i++)
 			if (this.matAres[vertice.id()][i] > 0) grau++;
 				
 		return grau;

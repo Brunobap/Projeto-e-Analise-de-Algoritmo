@@ -8,7 +8,6 @@ import grafos.*;
 public class Algoritmos implements AlgoritmosEmGrafos{
 
 	private int tempo;
-	private Grafo g;
 	
 	@Override
 	public Grafo carregarGrafo(String path, TipoDeRepresentacao t) throws Exception {
@@ -77,7 +76,7 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 				for (Vertice v : g.adjacentesDe(aux)) 
 					if (v.getCor() == 'b') {
 						v.setCor('c');
-						v.setDist(aux.getDist()+1.0);
+						v.setDist(aux.getDist()+1);
 						v.setPi(aux);
 						arvRes.add(new Aresta(aux,v));
 						Q.add(v);
@@ -88,7 +87,7 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 			return arvRes;
 			
 		} catch (Exception e) {
-			System.err.println(e);
+			System.err.println(e+e.getMessage());
 			return null;
 		}
 	}
@@ -115,10 +114,8 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 	 * 		f[u] = tempo
 	 */
 	@Override
-	public Collection<Aresta> buscaEmProfundidade(Grafo g) {
-		this.g = g;
-		
-		ArrayList<Aresta> arvFin = null;
+	public Collection<Aresta> buscaEmProfundidade(Grafo g) {		
+		ArrayList<Aresta> arvFin = new ArrayList<Aresta>();
 		
 		for (Vertice v : g.vertices())
 			v.setCor('b');
@@ -127,14 +124,11 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 		
 		for(Vertice v : g.vertices())
 			if (v.getCor() == 'b')
-				arvFin = BEP_Visit(v);
-		
-		// Final liberar a memória do algoritmo
-		this.g = null;
+				arvFin.addAll(BEP_Visit(v, g));
 	
 		return arvFin;
 	}
-	private ArrayList<Aresta> BEP_Visit(Vertice u) {
+	private ArrayList<Aresta> BEP_Visit(Vertice u, Grafo g) {
 		try {
 			ArrayList<Aresta> arvRes = new ArrayList<Aresta>();
 			
@@ -143,10 +137,10 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 			tempo++;
 			u.setD(tempo);
 			
-			for (Vertice adj : this.g.adjacentesDe(u))
+			for (Vertice adj : g.adjacentesDe(u))
 				if (adj.getCor() == 'b') {
-					arvRes.add(new Aresta(u,adj));
-					arvRes.addAll(BEP_Visit(adj));
+					arvRes.add(new Aresta(u, adj));
+					arvRes.addAll(BEP_Visit(adj, g));
 				}
 					
 			u.setCor('p');
@@ -169,22 +163,15 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 
 	// Usa BEP mas retorna true quando 2 vértices cinza se encontram e false se não se cruzarem
 	@Override
-	public boolean existeCiclo(Grafo g) {
-		this.g = g;
-		
-		ArrayList<Aresta> arvFin = null;
-		
+	public boolean existeCiclo(Grafo g) {	
 		for (Vertice v : g.vertices())
 			v.setCor('b');
 		
 		tempo = 0;					
 		
 		for(Vertice v : g.vertices())
-			if (v.getCor() == 'b') arvFin = BEP_Visit(v);
-			else return true;
-		
-		// Final liberar a memória do algoritmo
-		this.g = null;
+			if (v.getCor() == 'b') BEP_Visit(v, g);
+			else if (v.getCor() == 'c')  return true;
 	
 		return false;
 	}
@@ -273,7 +260,7 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 	}
 
 	/*
-	 * Modelos de CaminhoCurto-BellmanFord:
+	 * Modelos de achaCiclioNegativo-BellmanFord:
 	 * INICIALIZA (G = (V,A), s)
 	 * 		para cada v ∈ V
 	 * 			d[v] = inf
@@ -303,22 +290,77 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 	 * 		fim para
 	 * 		retorna verdadeiro
 	 * fim
+	 * 
+	 */ 
+	 /* 
+	 * Modelos de caminhoMinimo-Dijikstra:
+	 *   Inicialização: 
+	 *       N = {A} 
+	 *        para todos os nós v 
+	 *              se v é adjacente a  A
+	 *                  então D(v) = c(A,v)
+	 *              	senão D(v) = infinito
+	 *              
+	 *   Loop 
+	 *   	ache w  N tal que D(w) é mínimo.
+	 *   	acrescente w  a N
+	 *   	atualize D(v) para todo v adjacente a w e não em N:
+	 *   	D(v) = min( D(v), D(w) + c(w,v) )
+	 *   	** novo custo para v é o custo anterior para v ou o menor **
+	 *   	** custo de caminho conhecido para w mais o custo de w a v **
+	 *   até que todos os nós estejam em N 
 	 */
 	@Override
 	public ArrayList<Aresta> caminhoMaisCurto(Grafo g, Vertice origem, Vertice destino) {
-		inicializa(g, origem);
+		try {
+			// Inicialização
+			ArrayList<Vertice> N = new ArrayList<Vertice>();
+			N.add(origem);
+			for (Vertice v : g.vertices()) {
+				double custo = Double.MAX_VALUE;				
+				for (Aresta a : g.arestasEntre(origem, v))
+					if (a.destino()!=v && a.peso() < custo) custo = a.peso();				
+				v.setD(custo);				
+			}
+			
+			// Loop
+			ArrayList<Aresta> caminho = new ArrayList<Aresta>();
+			do {
+				Vertice atual = N.getLast();
+				Aresta maisPerto = menorPasso(g, atual, g.adjacentesDe(atual));
+				N.add(maisPerto.destino());
+				caminho.add(maisPerto);
+				
+			} while (N.getLast() != destino);			
+			
+			return caminho;
+			
+		} catch (Exception e) {
+			System.err.println(e+e.getMessage());
+			return null;
+		}		
+	}
+	private static Aresta menorPasso(Grafo g, Vertice s, ArrayList<Vertice> adjs) {
+		inicializa(g, s);
 		
-		for (int i=0; i<g.vertices().size()-1; i++) {
-			for (Aresta a : g.getArrayAres()) 
-				relaxa(a.origem(), a.destino(), a);
+		ArrayList<Aresta> passosPossiveis = new ArrayList<Aresta>();
+		
+		for (int i=0; i<g.vertices().size()-1; i++)
+			for (Aresta a : g.getArrayAres())
+				if (adjs.contains(a.destino())) {
+					relaxa(a.origem(), a.destino(), a);
+					passosPossiveis.add(a);
+				}
+		
+		Aresta a = passosPossiveis.removeFirst();
+		int menores;
+		for (Aresta b : passosPossiveis) {
+			menores = 0;
+			if (b.destino().getD() < a.destino().getD()) a = b;
+			if (menores==0) break;
 		}
 		
-		for (Aresta a : g.getArrayAres()) {
-			if (a.destino().getD() > a.origem().getD() + a.peso())
-				return null;
-		}
-		
-		return null;
+		return a;
 	}
 	private static void inicializa (Grafo g, Vertice s) {
 		for (Vertice v : g.vertices()) {
@@ -333,6 +375,7 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 			v.setPi(u);
 		}
 	}
+	
 
 	@Override
 	public double custoDoCaminho(Grafo g, ArrayList<Aresta> arestas, Vertice origem, Vertice destino) throws Exception {
@@ -342,8 +385,23 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 
 	@Override
 	public boolean ehCaminho(ArrayList<Aresta> arestas, Vertice origem, Vertice destino) {
-		
-		return false;
+		Vertice aux = origem;
+		for (int i=0; i<arestas.size(); i++) {
+			Aresta a = arestas.get(i);
+			Aresta b;
+			if (i != arestas.size()-1) {
+				b = arestas.get(i+1);
+				if (aux == a.origem() && a.destino() == b.origem()) {
+					aux = a.destino();
+				} else return false;
+				
+			} else {
+				if (aux == a.origem() && a.destino() == destino) {
+					aux = a.destino();
+				} else return false;
+			}				
+		}
+		return true;
 	}
 
 	@Override
