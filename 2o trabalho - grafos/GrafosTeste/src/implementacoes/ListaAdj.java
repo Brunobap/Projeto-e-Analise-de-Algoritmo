@@ -57,7 +57,7 @@ public class ListaAdj implements Grafo {
 	// ctor da representação
 	public ListaAdj(ArrayList<String> entrada) {
 		this.setNumVerts(Integer.parseInt(entrada.get(0)));
-		entrada.removeFirst();
+		entrada.remove(0);
 		
 		this.listVerts = new ArrayList<ArrayList<NoLista>>();
 		this.arrayAres = new ArrayList<Aresta>();

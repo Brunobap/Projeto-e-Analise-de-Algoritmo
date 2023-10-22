@@ -314,53 +314,75 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 	public ArrayList<Aresta> caminhoMaisCurto(Grafo g, Vertice origem, Vertice destino) {
 		try {
 			// Inicialização
-			ArrayList<Vertice> N = new ArrayList<Vertice>();
+			ArrayList<Vertice> N = new ArrayList<Vertice>(), restam = new ArrayList<Vertice>();
 			N.add(origem);
+			
 			for (Vertice v : g.vertices()) {
-				double custo = Double.MAX_VALUE;				
-				for (Aresta a : g.arestasEntre(origem, v))
-					if (a.destino()!=v && a.peso() < custo) custo = a.peso();				
-				v.setD(custo);				
+				if (v!=origem) restam.add(v);
+				double custo = Double.MAX_VALUE;	
+				if (v==origem) v.setD(0);
+				else {
+					for (Aresta a : g.arestasEntre(origem, v))
+						if (a.peso() < custo) custo = a.peso();				
+					v.setD(custo);
+				}
 			}
 			
 			// Loop
 			ArrayList<Aresta> caminho = new ArrayList<Aresta>();
 			do {
-				Vertice atual = N.getLast();
-				Aresta maisPerto = menorPasso(g, atual, g.adjacentesDe(atual));
-				N.add(maisPerto.destino());
-				caminho.add(maisPerto);
+				Vertice atual = N.get(N.size()-1);
+				//Aresta maisPerto = menorPasso(g, atual, restam);
+				for (Vertice v : restam) {
+					double custo = Double.MAX_VALUE;					
+					for (Aresta a : g.arestasEntre(atual, v))
+						if (a.peso() < custo) custo = a.peso();				
+					v.setD(custo);
+				}
+				Vertice maisPerto = restam.get(0);
+				for (Vertice v : restam)
+					if (v!=maisPerto && v.getD()<maisPerto.getD()) maisPerto = v;
+				N.add(maisPerto);
+				Aresta passo = g.arestasEntre(atual, maisPerto).get(0);
+				for (Aresta a : g.arestasEntre(atual, maisPerto))
+					if (a.peso()<passo.peso()) passo = a;
+				caminho.add(passo);
 				
-			} while (N.getLast() != destino);			
+			} while (N.get(N.size()-1) != destino);			
 			
 			return caminho;
 			
 		} catch (Exception e) {
-			System.err.println(e+e.getMessage());
+			System.err.println(e);
 			return null;
 		}		
 	}
 	private static Aresta menorPasso(Grafo g, Vertice s, ArrayList<Vertice> adjs) {
-		inicializa(g, s);
-		
-		ArrayList<Aresta> passosPossiveis = new ArrayList<Aresta>();
-		
-		for (int i=0; i<g.vertices().size()-1; i++)
-			for (Aresta a : g.getArrayAres())
-				if (adjs.contains(a.destino())) {
-					relaxa(a.origem(), a.destino(), a);
-					passosPossiveis.add(a);
-				}
-		
-		Aresta a = passosPossiveis.removeFirst();
-		int menores;
-		for (Aresta b : passosPossiveis) {
-			menores = 0;
-			if (b.destino().getD() < a.destino().getD()) a = b;
-			if (menores==0) break;
+		try {
+			inicializa(g, s);
+			
+			ArrayList<Aresta> passosPossiveis = new ArrayList<Aresta>();
+			
+			for (int i=0; i<g.vertices().size()-1; i++)
+				for (Aresta a : g.getArrayAres())
+					if (adjs.contains(a.destino()) && g.adjacentesDe(s).contains(a.destino())) {
+						relaxa(a.origem(), a.destino(), a);
+						passosPossiveis.add(a);
+					}
+			
+			Aresta a = passosPossiveis.remove(0);
+			int menores;
+			for (Aresta b : passosPossiveis) {
+				menores = 0;
+				if (b.destino().getD() < a.destino().getD()) a = b;
+				if (b.equals(passosPossiveis.get(passosPossiveis.size()-1)) && menores==0) break;
+			}
+			
+			return a;	
+		} catch (Exception e) {
+			System.err.println(e+e.getLocalizedMessage());
+			return null;
 		}
-		
-		return a;
 	}
 	private static void inicializa (Grafo g, Vertice s) {
 		for (Vertice v : g.vertices()) {
@@ -379,8 +401,29 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 
 	@Override
 	public double custoDoCaminho(Grafo g, ArrayList<Aresta> arestas, Vertice origem, Vertice destino) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			Exception e = new Exception("Não é um caminho entre origem e destino de g!");
+			if (!g.getArrayAres().containsAll(arestas)) throw e;
+			double custo = 0;
+			
+			Vertice aux = origem;
+			for (int i=0; i<arestas.size()-2; i++) {
+				Aresta a = arestas.get(i), b = arestas.get(i+1);
+				if (a.destino()==b.origem()) {
+					custo += a.peso();
+					aux = a.destino();
+				} else throw e;
+			}
+			Aresta ultimoPasso = arestas.get(arestas.size()-1);
+			if (ultimoPasso.origem()==aux && ultimoPasso.destino()==destino) {
+				custo += ultimoPasso.peso();
+			}
+			
+			return custo;
+		}catch (Exception e) {
+			System.err.println(e);
+			return 0;
+		}
 	}
 
 	@Override

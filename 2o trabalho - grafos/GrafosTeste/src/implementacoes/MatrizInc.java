@@ -64,7 +64,7 @@ public class MatrizInc implements Grafo {
 	// ctor da representação
 	public MatrizInc(ArrayList<String> entrada) {
 		this.numVerts = Integer.parseInt(entrada.get(0));
-		entrada.removeFirst();
+		entrada.remove(0);
 		
 		this.numAres = 0;
 		for (String l : entrada)

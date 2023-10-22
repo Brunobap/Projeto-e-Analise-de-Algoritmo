@@ -57,7 +57,7 @@ public class MatrizAdj implements Grafo {
 	// ctor da representação
 	public MatrizAdj(ArrayList<String> entrada) {
 		this.setNumVerts(Integer.parseInt(entrada.get(0)));
-		entrada.removeFirst();
+		entrada.remove(0);
 		
 		this.matVerts = new double[this.numVerts][this.numVerts];
 		this.arrayAres = new ArrayList<Aresta>();

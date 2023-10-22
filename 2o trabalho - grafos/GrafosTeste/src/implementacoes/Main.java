@@ -9,7 +9,8 @@ public class Main {
 	public static void main(String[] args) {
 		String caminhoTeste = "Teste2.txt";
 		
-		/* Parte 1: Representações "cruas"
+		/* 
+		 * Parte 1: Representações "cruas"
 		FileManager file = new FileManager();
 		ArrayList<String> entrada = file.stringReader(caminhoTeste);
 		System.out.println(entrada);
@@ -21,7 +22,8 @@ public class Main {
 		System.out.println(mat2.print());
 		
 		ListaAdj lista = new ListaAdj(entrada);
-		System.out.println(lista.print());*/
+		System.out.println(lista.print());
+		*/
 		
 		/* Parte 2: Representação com grafo, e seus algoritmos */
 		Algoritmos alg = new Algoritmos();
@@ -43,13 +45,18 @@ public class Main {
 			System.out.println(AGM);
 			
 			// 4o Algoritmo: Caminho mais curto (com peso)
-			ArrayList<Aresta> CMC = alg.caminhoMaisCurto(g, g.vertices().get(0), g.vertices().get(10));
+			Vertice origem = g.vertices().get(0), destino = g.vertices().get(10);
+			ArrayList<Aresta> CMC = alg.caminhoMaisCurto(g, origem, destino);
 			System.out.println(CMC);
 			
-			//5o Algoritmo: "É caminho?"
-			if (alg.ehCaminho(CMC, g.vertices().get(0), g.vertices().get(10))) 
+			// 5o Algoritmo: "É caminho?"
+			if (alg.ehCaminho(CMC, origem, destino)) 
 				System.out.println("Esse caminho é válido");
 			else System.out.println("Esse caminho não é válido");
+			
+			// 6o Algoritmo: Custo do caminho
+			double custoCMC = alg.custoDoCaminho(g, CMC, origem, destino);
+			System.out.println("Menor custo do caminho 0->10: "+custoCMC);
 			
 		} catch (Exception e) {
 			System.err.println(e);
