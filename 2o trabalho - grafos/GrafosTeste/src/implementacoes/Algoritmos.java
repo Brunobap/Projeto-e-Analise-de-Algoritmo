@@ -293,7 +293,7 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 	 * 
 	 */ 
 	 /* 
-	 * Modelos de caminhoMinimo-Dijikstra:
+	 * Modelo de caminhoMinimo-Dijikstra:
 	 *   Inicialização: 
 	 *       N = {A} 
 	 *        para todos os nós v 
@@ -310,52 +310,36 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 	 *   	** custo de caminho conhecido para w mais o custo de w a v **
 	 *   até que todos os nós estejam em N 
 	 */
+	/*
+	 * Modelo VetorDistancia:
+	 * 		Inicialização
+	 * 		... para uma origem X:
+	 * 		
+	 * 		para todos os nós adjacentes v:
+	 * 			Dx(*,v) = infinito		// o operador * significa p/ todas as colunas //
+	 * 			Dx(v,v) = c(X,v)
+	 * 		para todos os destinos, y
+	 * 			envia min Dxw(y,w) para cada vizinho	// w sobre todos os vizinhos de X //
+	 * 
+	 * 
+	 * 
+	 * 		if (c(C,V) muda por d)
+	 * 			// muda o custo para todos os destinos via vizinho v por d //
+	 *			// NOTA: d pode ser positivo ou negativo //
+	 *			para todos os destinos y: Dx(y,X) = Dx(y,V)+d
+	 *
+	 *		else if (atualização recebida de V sobre destino Y)
+	 *			// caminho mais curto de V para algum Y mudou //
+	 *			// V enviou um novo valor para seu min Dvw(Y,w) //
+	 *			// chame este novo valor recebido "newval" //
+	 *			para o púnico destino y: Dx(Y,V) = c(X,V) + newval
+	 *
+	 *		if nós temos um novo min 
+	 */
 	@Override
 	public ArrayList<Aresta> caminhoMaisCurto(Grafo g, Vertice origem, Vertice destino) {
-		try {
-			// Inicialização
-			ArrayList<Vertice> N = new ArrayList<Vertice>(), restam = new ArrayList<Vertice>();
-			N.add(origem);
-			
-			for (Vertice v : g.vertices()) {
-				if (v!=origem) restam.add(v);
-				double custo = Double.MAX_VALUE;	
-				if (v==origem) v.setD(0);
-				else {
-					for (Aresta a : g.arestasEntre(origem, v))
-						if (a.peso() < custo) custo = a.peso();				
-					v.setD(custo);
-				}
-			}
-			
-			// Loop
-			ArrayList<Aresta> caminho = new ArrayList<Aresta>();
-			do {
-				Vertice atual = N.get(N.size()-1);
-				//Aresta maisPerto = menorPasso(g, atual, restam);
-				for (Vertice v : restam) {
-					double custo = Double.MAX_VALUE;					
-					for (Aresta a : g.arestasEntre(atual, v))
-						if (a.peso() < custo) custo = a.peso();				
-					v.setD(custo);
-				}
-				Vertice maisPerto = restam.get(0);
-				for (Vertice v : restam)
-					if (v!=maisPerto && v.getD()<maisPerto.getD()) maisPerto = v;
-				N.add(maisPerto);
-				Aresta passo = g.arestasEntre(atual, maisPerto).get(0);
-				for (Aresta a : g.arestasEntre(atual, maisPerto))
-					if (a.peso()<passo.peso()) passo = a;
-				caminho.add(passo);
-				
-			} while (N.get(N.size()-1) != destino);			
-			
-			return caminho;
-			
-		} catch (Exception e) {
-			System.err.println(e);
-			return null;
-		}		
+								
+		return null;
 	}
 	private static Aresta menorPasso(Grafo g, Vertice s, ArrayList<Vertice> adjs) {
 		try {
@@ -447,7 +431,7 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 		return true;
 	}
 
-	// Faz uma busca em profundidade mas retorna arestas que já existem
+	
 	@Override
 	public Collection<Aresta> arestasDeArvore(Grafo g) {
 		ArrayList<Aresta> arvFin = new ArrayList<Aresta>();
@@ -492,7 +476,7 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 		}
 	}
 
-	// Faz uma busca em profundidade mas retorna arestas
+	
 	@Override
 	public Collection<Aresta> arestasDeRetorno(Grafo g) {
 ArrayList<Aresta> arvFin = new ArrayList<Aresta>();
@@ -504,11 +488,11 @@ ArrayList<Aresta> arvFin = new ArrayList<Aresta>();
 		
 		for(Vertice v : g.vertices())
 			if (v.getCor() == 'b')
-				arvFin.addAll(BEP_Visit_AAv(v, g));
+				arvFin.addAll(BEP_Visit_ARe(v, g));
 	
 		return arvFin;
 	}
-	private ArrayList<Aresta> BEP_Visit_AAv(Vertice u, Grafo g) {
+	private ArrayList<Aresta> BEP_Visit_ARe(Vertice u, Grafo g) {
 		try {
 			ArrayList<Aresta> arvRes = new ArrayList<Aresta>();
 			
@@ -537,12 +521,21 @@ ArrayList<Aresta> arvFin = new ArrayList<Aresta>();
 		}
 	}
 
+	
 	@Override
 	public Collection<Aresta> arestasDeAvanco(Grafo g) {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Aresta> buscadas = (ArrayList<Aresta>) this.buscaEmProfundidade(g);
+		ArrayList<Aresta> diretas = new ArrayList<Aresta>();
+		diretas.addAll(g.getArrayAres());
+		
+		for (Aresta a : diretas) 
+			for (Aresta b : buscadas) 
+				if (a.origem()==b.origem() && a.destino()==b.destino()) diretas.remove(b); 
+		
+		return diretas;
 	}
 
+	
 	@Override
 	public Collection<Aresta> arestasDeCruzamento(Grafo g) {
 		// TODO Auto-generated method stub
