@@ -338,8 +338,42 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 	 */
 	@Override
 	public ArrayList<Aresta> caminhoMaisCurto(Grafo g, Vertice origem, Vertice destino) {
-								
-		return null;
+		// Inicialização
+		ArrayList<Vertice> N = new ArrayList<Vertice>(), restam = new ArrayList<Vertice>();
+		N.add(origem);
+		for (Vertice v : g.vertices()) {
+			if (v!=origem) restam.add(v);
+			double peso = Double.MAX_VALUE;
+			try { for (Aresta a : g.arestasEntre(origem, v))
+				if (a.peso()<peso) peso = a.peso();
+			} catch (Exception e) {
+				System.err.println(e);
+				return null;
+			} finally { v.setD(peso); }
+		}
+		
+		// Loop
+		Vertice atual;
+		ArrayList<Aresta> caminho = new ArrayList<Aresta>();
+		do {
+			atual = N.get(N.size()-1);
+			Aresta passo = menorPasso(g, atual, restam);
+			if (passo == null) N.remove(atual);
+			else {
+				Vertice v = restam.remove(restam.indexOf(passo.destino()));
+				try { 
+					if (g.adjacentesDe(v).size()>0) {
+						N.add(v); 
+						caminho.add(passo);
+					}
+				} catch (Exception e) {
+					// não precisa fazer nada, o passo não foi dado
+				}
+			} 
+			
+		} while (atual!=destino && N.size()!=0);
+		
+		return caminho;
 	}
 	private static Aresta menorPasso(Grafo g, Vertice s, ArrayList<Vertice> adjs) {
 		try {
@@ -347,24 +381,21 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 			
 			ArrayList<Aresta> passosPossiveis = new ArrayList<Aresta>();
 			
+			
 			for (int i=0; i<g.vertices().size()-1; i++)
 				for (Aresta a : g.getArrayAres())
-					if (adjs.contains(a.destino()) && g.adjacentesDe(s).contains(a.destino())) {
+					if (adjs.contains(a.destino()) && g.adjacentesDe(s).contains(a.destino()) && !passosPossiveis.contains(a)) {
 						relaxa(a.origem(), a.destino(), a);
 						passosPossiveis.add(a);
 					}
 			
 			Aresta a = passosPossiveis.remove(0);
-			int menores;
-			for (Aresta b : passosPossiveis) {
-				menores = 0;
+			for (Aresta b : passosPossiveis) 
 				if (b.destino().getD() < a.destino().getD()) a = b;
-				if (b.equals(passosPossiveis.get(passosPossiveis.size()-1)) && menores==0) break;
-			}
 			
 			return a;	
 		} catch (Exception e) {
-			System.err.println(e+e.getLocalizedMessage());
+			System.err.println(e);
 			return null;
 		}
 	}
