@@ -310,32 +310,6 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 	 *   	** custo de caminho conhecido para w mais o custo de w a v **
 	 *   até que todos os nós estejam em N 
 	 */
-	/*
-	 * Modelo VetorDistancia:
-	 * 		Inicialização
-	 * 		... para uma origem X:
-	 * 		
-	 * 		para todos os nós adjacentes v:
-	 * 			Dx(*,v) = infinito		// o operador * significa p/ todas as colunas //
-	 * 			Dx(v,v) = c(X,v)
-	 * 		para todos os destinos, y
-	 * 			envia min Dxw(y,w) para cada vizinho	// w sobre todos os vizinhos de X //
-	 * 
-	 * 
-	 * 
-	 * 		if (c(C,V) muda por d)
-	 * 			// muda o custo para todos os destinos via vizinho v por d //
-	 *			// NOTA: d pode ser positivo ou negativo //
-	 *			para todos os destinos y: Dx(y,X) = Dx(y,V)+d
-	 *
-	 *		else if (atualização recebida de V sobre destino Y)
-	 *			// caminho mais curto de V para algum Y mudou //
-	 *			// V enviou um novo valor para seu min Dvw(Y,w) //
-	 *			// chame este novo valor recebido "newval" //
-	 *			para o púnico destino y: Dx(Y,V) = c(X,V) + newval
-	 *
-	 *		if nós temos um novo min 
-	 */
 	@Override
 	public ArrayList<Aresta> caminhoMaisCurto(Grafo g, Vertice origem, Vertice destino) {
 		// Inicialização
@@ -358,18 +332,24 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 		do {
 			atual = N.get(N.size()-1);
 			Aresta passo = menorPasso(g, atual, restam);
-			if (passo == null) N.remove(atual);
-			else {
+			if (passo == null) {
+				N.remove(atual);
+				caminho.remove(caminho.size()-1);
+			} else {
 				Vertice v = restam.remove(restam.indexOf(passo.destino()));
 				try { 
-					if (g.adjacentesDe(v).size()>0) {
+					ArrayList<Vertice> adjs = g.adjacentesDe(v);
+					for (Vertice aux : adjs) 
+						if (!restam.contains(aux)) adjs.remove(aux); 
+					if (adjs.size()>0 || passo.destino()==destino) {
 						N.add(v); 
 						caminho.add(passo);
 					}
 				} catch (Exception e) {
 					// não precisa fazer nada, o passo não foi dado
 				}
-			} 
+			}
+			atual = N.get(N.size()-1); 
 			
 		} while (atual!=destino && N.size()!=0);
 		
