@@ -57,6 +57,10 @@ public class Main {
 			// 6o Algoritmo: Custo do caminho
 			double custoCMC = alg.custoDoCaminho(g, CMC, origem, destino);
 			System.out.println("Menor custo do caminho 0->10: "+custoCMC);
+		
+			// 7o Algoritmo: Custo da AGM
+			double custoAGM = alg.custoDaArvoreGeradora(g, AGM);
+			System.out.println("Custo da AGM: "+custoAGM);
 			
 		} catch (Exception e) {
 			System.err.println(e);

@@ -15,16 +15,10 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 		ArrayList<String> entrada = file.stringReader(path);
 		Grafo g;
 		switch (t) {
-		case MATRIZ_DE_ADJACENCIA: g = new MatrizAdj(entrada); 
-			break;
-
-		case MATRIZ_DE_INCIDENCIA: g = new MatrizInc(entrada);
-			break;
-			
-		default: g = new ListaAdj(entrada);
-			break;
+			case MATRIZ_DE_ADJACENCIA: return new MatrizAdj(entrada);
+			case MATRIZ_DE_INCIDENCIA: return new MatrizInc(entrada);
+			default: return new ListaAdj(entrada);
 		}
-		return g;
 	}
 
 	/*
@@ -249,14 +243,21 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 	
 	@Override
 	public double custoDaArvoreGeradora(Grafo g, Collection<Aresta> arestas) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		double soma = 0;
+		ArrayList<Aresta> AGM = (ArrayList<Aresta>) this.agmUsandoKruskall(g);
+		
+		if (!AGM.equals(arestas)) throw new Exception("A arvore passada não é geradora desse grafo.");
+		else for (Aresta a : AGM) soma += a.peso();
+		
+		return soma;
 	}
 
 	@Override
 	public boolean ehArvoreGeradora(Grafo g, Collection<Aresta> arestas) {
-		// TODO Auto-generated method stub
-		return false;
+		ArrayList<Aresta> AGM = (ArrayList<Aresta>) this.agmUsandoKruskall(g);
+
+		if (AGM.equals(arestas)) return true;
+		else return false;
 	}
 
 	/*
