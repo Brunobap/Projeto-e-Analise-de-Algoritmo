@@ -486,7 +486,6 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 			return null;
 		}
 	}
-
 	
 	@Override
 	public Collection<Aresta> arestasDeRetorno(Grafo g) {
@@ -531,7 +530,6 @@ ArrayList<Aresta> arvFin = new ArrayList<Aresta>();
 			return null;
 		}
 	}
-
 	
 	@Override
 	public Collection<Aresta> arestasDeAvanco(Grafo g) {
@@ -545,7 +543,6 @@ ArrayList<Aresta> arvFin = new ArrayList<Aresta>();
 		
 		return diretas;
 	}
-
 	
 	@Override
 	public Collection<Aresta> arestasDeCruzamento(Grafo g) {
