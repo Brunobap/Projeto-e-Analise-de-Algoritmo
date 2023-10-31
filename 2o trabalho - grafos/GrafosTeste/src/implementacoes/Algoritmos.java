@@ -403,7 +403,7 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 			double custo = 0;
 			
 			Vertice aux = origem;
-			for (int i=0; i<arestas.size()-2; i++) {
+			for (int i=0; i<arestas.size()-1; i++) {
 				Aresta a = arestas.get(i), b = arestas.get(i+1);
 				if (a.destino()==b.origem()) {
 					custo += a.peso();
@@ -473,7 +473,7 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 					if (adj.getCor() == 'b') {
 						arvRes.add(a);
 					}
-				arvRes.addAll(BEP_Visit(adj, g));
+				if (adj.getCor() == 'b') arvRes.addAll(BEP_Visit_AAr(adj, g));
 			}
 					
 			u.setCor('p');
@@ -517,7 +517,7 @@ ArrayList<Aresta> arvFin = new ArrayList<Aresta>();
 					if (adj.getCor() == 'c') {
 						arvRes.add(a);
 					}
-				if (adj.getCor() == 'b') arvRes.addAll(BEP_Visit(adj, g));
+				if (adj.getCor() == 'b') arvRes.addAll(BEP_Visit_ARe(adj, g));
 			}
 					
 			u.setCor('p');
@@ -534,21 +534,94 @@ ArrayList<Aresta> arvFin = new ArrayList<Aresta>();
 	
 	@Override
 	public Collection<Aresta> arestasDeAvanco(Grafo g) {
-		ArrayList<Aresta> buscadas = (ArrayList<Aresta>) this.buscaEmProfundidade(g);
-		ArrayList<Aresta> diretas = new ArrayList<Aresta>();
-		diretas.addAll(g.getArrayAres());
+		ArrayList<Aresta> 
+				avancos = new ArrayList<Aresta>(),
+				buscadas = (ArrayList<Aresta>) this.buscaEmProfundidade(g);
+
+		ArrayList<Vertice> V = g.vertices();		
+		ArrayList<ArrayList<Vertice>> arvores = new ArrayList<ArrayList<Vertice>>();
+		for (Vertice v : V) {
+			ArrayList<Vertice> newConj = new ArrayList<Vertice>();
+			newConj.add(v);
+			arvores.add(newConj);
+		}
 		
-		for (Aresta a : diretas) 
-			for (Aresta b : buscadas) 
-				if (a.origem()==b.origem() && a.destino()==b.destino()) diretas.remove(b); 
+		// Ordenar as arestas por peso
+		ArrayList<Aresta> AOrd = arestasOrdenadas(g.getArrayAres());
 		
-		return diretas;
+		// Verificação, adição e união
+		for (Aresta a : AOrd) {
+			Vertice ori = a.origem(), dest = a.destino();
+			ArrayList<Vertice> arvOri = null, arvDest = null;
+			for (ArrayList<Vertice> arv : arvores) {
+				if (arv.contains(ori)) arvOri = arv;
+				if (arv.contains(dest)) arvDest = arv;
+			}
+			if (arvOri != null && arvDest != null && arvOri != arvDest) {
+				arvOri.addAll(arvDest);
+				arvores.remove(arvDest);
+			}		
+		}
+		
+		for (Aresta a : g.getArrayAres()) {
+			ArrayList<Vertice> arv1 = null, arv2 = null;
+			for (ArrayList<Vertice> arvore : arvores) {
+				if (arvore.contains(a.origem())) arv1 = arvore;
+				if (arvore.contains(a.destino())) arv2 = arvore;
+				if (arv1!=null && arv2!=null) break;
+			}
+			if (arv1!=null && arv2!=null && arv1==arv2 && a.origem().getD()<a.destino().getD()) {
+				for (int i=0; i<buscadas.size(); i++) {
+					Aresta b = buscadas.get(i);
+					if (a.origem()==b.origem() && a.destino()==b.destino()) break;
+					else if (i==buscadas.size()-1) avancos.add(a);		
+				}
+			}
+		}
+		
+		return avancos;
 	}
 	
 	@Override
 	public Collection<Aresta> arestasDeCruzamento(Grafo g) {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Aresta> cruz = new ArrayList<Aresta>();
+
+		ArrayList<Vertice> V = g.vertices();		
+		ArrayList<ArrayList<Vertice>> arvores = new ArrayList<ArrayList<Vertice>>();
+		for (Vertice v : V) {
+			ArrayList<Vertice> newConj = new ArrayList<Vertice>();
+			newConj.add(v);
+			arvores.add(newConj);
+		}
+		
+		// Ordenar as arestas por peso
+		ArrayList<Aresta> AOrd = arestasOrdenadas(g.getArrayAres());
+		
+		// Verificação, adição e união
+		for (Aresta a : AOrd) {
+			Vertice ori = a.origem(), dest = a.destino();
+			ArrayList<Vertice> arvOri = null, arvDest = null;
+			for (ArrayList<Vertice> arv : arvores) {
+				if (arv.contains(ori)) arvOri = arv;
+				if (arv.contains(dest)) arvDest = arv;
+			}
+			if (arvOri != null && arvDest != null && arvOri != arvDest) {
+				arvOri.addAll(arvDest);
+				arvores.remove(arvDest);
+			}		
+		}
+		
+		for (Aresta a : g.getArrayAres()) {
+			ArrayList<Vertice> arv1 = null, arv2 = null;
+			for (ArrayList<Vertice> arvore : arvores) {
+				if (arvore.contains(a.origem())) arv1 = arvore;
+				if (arvore.contains(a.destino())) arv2 = arvore;
+				if (arv1!=null && arv2!=null) break;
+			}
+			if (arv1!=null && arv2!=null && arv1!=arv2) cruz.add(a);			
+		}
+		
+		return cruz;
 	}
 	
 }

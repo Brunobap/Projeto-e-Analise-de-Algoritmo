@@ -40,7 +40,8 @@ public class ListaAdj implements Grafo {
 	}
 	
 	// Função para testes no console
-	public String print() {
+	@Override
+	public String toString() {
 		String saida = "";
 		
 		for (int i=0; i<this.numVerts; i++) {

@@ -22,6 +22,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.DefaultComboBoxModel;
 
 import grafos.*;
@@ -34,6 +35,11 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.CaretEvent;
+import java.awt.Panel;
+import javax.swing.JDesktopPane;
+import javax.swing.JMenuBar;
+import java.awt.Window.Type;
+import javax.swing.JCheckBox;
 
 public class MainFrame extends JFrame {
 
@@ -44,6 +50,14 @@ public class MainFrame extends JFrame {
 	private TipoDeRepresentacao tipo;
 	private Algoritmos alg;
 	private String endArq;
+	/**
+	 * @wbp.nonvisual location=498,39
+	 */
+	private final ErrorFrame errorFrame = new ErrorFrame();
+	/**
+	 * @wbp.nonvisual location=494,89
+	 */
+	private final ResultFrame resultFrame = new ResultFrame();
 
 	/**
 	 * Launch the application.
@@ -65,13 +79,15 @@ public class MainFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public MainFrame() {
+		errorFrame.setType(Type.UTILITY);
+		errorFrame.getContentPane().setFont(new Font("Arial", Font.PLAIN, 12));
 		// Valor do exemplo inicial
 		this.endArq = "Teste2.txt";			
 		
 		setTitle("Simulador de grafos - Bruno Batista");
 		setFont(new Font("Arial", Font.PLAIN, 12));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 668);
+		setBounds(100, 100, 450, 566);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -104,7 +120,8 @@ public class MainFrame extends JFrame {
 					for (String linha : entrada) 
 						txtContArq.setText(txtContArq.getText()+linha+"\n");
 				} catch (Exception err) {
-					// TODO: handle exception
+					errorFrame.setLblErro("Erro ao carregar o arquivo especificado.\nCertifique-se de que o nome/endereço dele foi digitado corretamente.");
+					errorFrame.setVisible(true);
 				}
 			}
 		});
@@ -196,12 +213,58 @@ public class MainFrame extends JFrame {
 		lblNewLabel_2.setFont(new Font("Arial", Font.PLAIN, 12));
 		
 		JButton btnNewButton_1 = new JButton("Ver AGM de Krukall");
-		btnNewButton_1.setFont(new Font("Arial", Font.PLAIN, 12));
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				resultFrame.setTitle("\"Ver AGM de Krukall\"");
+				ArrayList<Aresta> AGM = (ArrayList<Aresta>) alg.agmUsandoKruskall(g);
+				String result = "Arestas da árvore mínima gerada:\n";
+				for (Aresta a : AGM)
+					result += "   "+a.origem().id()+" --> "+a.destino().id()+"\n";
+				resultFrame.setTxtResult(result);
+				resultFrame.setVisible(true);
+			}
+		});
+		btnNewButton_1.setFont(new Font("Arial", Font.PLAIN, 12));		
+
+		JCheckBox chckPeso = new JCheckBox("Usar o peso das arestas para o caminho");
+
+		JSpinner numOri = new JSpinner();
+		numOri.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		JSpinner numDest = new JSpinner();
+		numDest.setFont(new Font("Arial", Font.PLAIN, 12));
 		
 		JButton btnNewButton_2 = new JButton("Ver o caminho mínimo entre");
 		btnNewButton_2.setFont(new Font("Arial", Font.PLAIN, 12));
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {					
+					ArrayList<Aresta> caminho;
+					String result = "Arestas do caminho:\n";
+					int nOri = Integer.parseInt(numOri.getValue().toString());
+					int nDest = Integer.parseInt(numDest.getValue().toString());
+					Vertice ori = g.vertices().get(nOri), dest = g.vertices().get(nDest);
+					
+					// Se é pra usar os pesos
+					if (chckPeso.isSelected()) {
+						result += " * considerando o peso das arestas\n\n";
+						caminho = alg.caminhoMaisCurto(g, ori, dest);
+					} else {
+						result += " * NÃO considerando o peso das arestas\n\n";
+						caminho = alg.menorCaminho(g, ori, dest);
+					}
+					
+					for (Aresta a : caminho)
+						result += "   "+a.origem().id()+" -"+a.peso()+"-> "+a.destino().id()+'\n';
+					
+					result += "Peso do caminho percorrido: "+alg.custoDoCaminho(g, caminho, ori, dest);
+					resultFrame.setTxtResult(result);
+					resultFrame.setVisible(true);
+					
+				} catch (Exception err) {
+					errorFrame.setLblErro("Erro ao procurar os vértices.\nCertifique-se de que ambos os vértices digitados pertençam ao\nintervalo do grafo.");
+					errorFrame.setVisible(true);
+				}
 			}
 		});
 		
@@ -214,19 +277,47 @@ public class MainFrame extends JFrame {
 		JButton btnPrintGrafo = new JButton("Visualizar a representação do grafo");
 		btnPrintGrafo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// TODO: função que mostra o print da representação
+				resultFrame.setTitle("\"Visualizar a representação do grafo\"");
+				String representacao = g.toString();
+				resultFrame.setTxtResult(representacao);
+				resultFrame.setVisible(true);
 			}
 		});
 		btnPrintGrafo.setFont(new Font("Arial", Font.PLAIN, 12));
 		
 		JButton btnNewButton_1_2 = new JButton("Ver as arestas do grafo e seus tipos");
+		btnNewButton_1_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				resultFrame.setTitle("\"Ver as arestas do grafo e seus tipos\"");
+				
+				ArrayList<Aresta> aresAva, aresArv, aresRet, aresCruz;
+				aresAva = (ArrayList<Aresta>) alg.arestasDeAvanco(g);
+				aresArv = (ArrayList<Aresta>) alg.arestasDeArvore(g);
+				aresRet = (ArrayList<Aresta>) alg.arestasDeRetorno(g);
+				aresCruz = (ArrayList<Aresta>) alg.arestasDeCruzamento(g);
+				String result = "Arestas de árvore:\n";
+				for (Aresta a : aresArv)
+					result += "   "+a.origem().id()+" --"+a.peso()+"-> "+a.destino().id()+'\n';
+				
+				result += "\n\nArestas de avanço:\n";
+				for (Aresta a : aresAva)
+					result += "   "+a.origem().id()+" --"+a.peso()+"-> "+a.destino().id()+'\n';
+				
+				result += "\n\nArestas de retorno:\n";
+				for (Aresta a : aresRet)
+					result += "   "+a.origem().id()+" --"+a.peso()+"-> "+a.destino().id()+'\n';
+				
+				result += "\n\nArestas de cruzamento:\n";
+				for (Aresta a : aresCruz)
+					result += "   "+a.origem().id()+" --"+a.peso()+"-> "+a.destino().id()+'\n';
+				
+				resultFrame.setTxtResult(result);
+				resultFrame.setVisible(true);
+			}
+		});
 		btnNewButton_1_2.setFont(new Font("Arial", Font.PLAIN, 12));
-		
-		JSpinner spinner = new JSpinner();
-		spinner.setFont(new Font("Arial", Font.PLAIN, 12));
-		
-		JSpinner spinner_1 = new JSpinner();
-		spinner_1.setFont(new Font("Arial", Font.PLAIN, 12));
+				
+		chckPeso.setFont(new Font("Arial", Font.PLAIN, 12));
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
 		gl_panel_2.setHorizontalGroup(
 			gl_panel_2.createParallelGroup(Alignment.LEADING)
@@ -235,52 +326,60 @@ public class MainFrame extends JFrame {
 						.addComponent(lblNewLabel_2)
 						.addGroup(gl_panel_2.createSequentialGroup()
 							.addContainerGap()
-							.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
-								.addComponent(btnPrintGrafo)
-								.addGroup(gl_panel_2.createSequentialGroup()
-									.addGroup(gl_panel_2.createParallelGroup(Alignment.TRAILING, false)
-										.addComponent(btnNewButton_2, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addComponent(btnNewButton_1, Alignment.LEADING))
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
-										.addComponent(lblNewLabel_2_1, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE)
-										.addComponent(spinner, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE))
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
-										.addComponent(spinner_1, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
-										.addComponent(lblNewLabel_2_1_1, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE)))))
+							.addComponent(btnPrintGrafo)))
+					.addContainerGap(178, Short.MAX_VALUE))
+				.addGroup(gl_panel_2.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(btnNewButton_1)
+					.addContainerGap(268, Short.MAX_VALUE))
+				.addGroup(gl_panel_2.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panel_2.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(btnNewButton_1_2)))
-					.addContainerGap(76, Short.MAX_VALUE))
+							.addComponent(chckPeso)
+							.addContainerGap())
+						.addGroup(gl_panel_2.createSequentialGroup()
+							.addComponent(btnNewButton_2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblNewLabel_2_1, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE)
+								.addComponent(numOri, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+								.addComponent(numDest, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblNewLabel_2_1_1, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
+							.addGap(76))))
+				.addGroup(gl_panel_2.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(btnNewButton_1_2)
+					.addContainerGap(174, Short.MAX_VALUE))
 		);
 		gl_panel_2.setVerticalGroup(
 			gl_panel_2.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_2.createSequentialGroup()
 					.addGap(11)
+					.addComponent(lblNewLabel_2)
+					.addGap(4)
+					.addComponent(btnPrintGrafo)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnNewButton_1)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnNewButton_1_2)
+					.addGap(11)
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.TRAILING)
 						.addGroup(gl_panel_2.createSequentialGroup()
 							.addComponent(lblNewLabel_2_1_1)
 							.addGap(26))
+						.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
+							.addComponent(btnNewButton_2)
+							.addComponent(numOri, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(numDest, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_panel_2.createSequentialGroup()
-							.addComponent(lblNewLabel_2)
-							.addGap(4)
-							.addComponent(btnPrintGrafo)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addGroup(gl_panel_2.createParallelGroup(Alignment.TRAILING)
-								.addGroup(gl_panel_2.createSequentialGroup()
-									.addComponent(btnNewButton_1)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
-										.addComponent(btnNewButton_2)
-										.addComponent(spinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(spinner_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-								.addGroup(gl_panel_2.createSequentialGroup()
-									.addComponent(lblNewLabel_2_1)
-									.addGap(26)))))
+							.addComponent(lblNewLabel_2_1)
+							.addGap(26)))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(btnNewButton_1_2)
-					.addContainerGap(100, Short.MAX_VALUE))
+					.addComponent(chckPeso)
+					.addContainerGap(63, Short.MAX_VALUE))
 		);
 		gl_panel_2.setAutoCreateContainerGaps(true);
 		gl_panel_2.setAutoCreateGaps(true);
@@ -304,9 +403,9 @@ public class MainFrame extends JFrame {
 					.addComponent(panel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(5)
 					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(5)
-					.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 254, GroupLayout.PREFERRED_SIZE)
-					.addGap(54))
+					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
+					.addGap(105))
 		);
 		gl_contentPane.setAutoCreateContainerGaps(true);
 		gl_contentPane.setAutoCreateGaps(true);

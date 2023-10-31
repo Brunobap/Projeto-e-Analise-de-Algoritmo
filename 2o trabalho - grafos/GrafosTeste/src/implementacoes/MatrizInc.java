@@ -47,13 +47,14 @@ public class MatrizInc implements Grafo {
 	}
 	
 	// Função para testes no console
-	public String print() {
+	@Override
+	public String toString() {
 		String saida = "";
 		
 		for (int i=0; i<this.numVerts; i++) {
 			for (int j=0; j<this.numAres; j++) {
-				saida += " ";
-				if (this.matAres[i][j] < 10) saida += "0";
+				saida += "  |  ";
+				if (this.matAres[i][j] < 10 && this.matAres[i][j] >= 0) saida += "0";
 				saida += this.matAres[i][j];
 			} saida += "\n";
 		}

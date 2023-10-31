@@ -40,12 +40,13 @@ public class MatrizAdj implements Grafo {
 	}
 	
 	// Função para testes no console
-	public String print() {
+	@Override
+	public String toString() {
 		String saida = "";
 		
 		for (int i=0; i<this.numVerts; i++) {
 			for (int j=0; j<this.numVerts; j++) {
-				saida += " ";
+				saida += "  |  ";
 				if (this.matVerts[i][j] < 10) saida += "0";
 				saida += this.matVerts[i][j];
 			} saida += "\n";
