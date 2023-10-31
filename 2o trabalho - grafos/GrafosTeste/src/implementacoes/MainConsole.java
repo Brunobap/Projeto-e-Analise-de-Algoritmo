@@ -5,8 +5,8 @@ import java.util.Collection;
 
 import grafos.*;
 
-public class Main {
-	public static void main(String[] args) {
+public class MainConsole {
+	public static void mainConsole(String[] args) {
 		String caminhoTeste = "Teste2.txt";
 		
 		/* 
