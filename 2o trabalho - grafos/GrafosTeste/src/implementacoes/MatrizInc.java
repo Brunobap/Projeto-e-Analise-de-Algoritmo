@@ -53,9 +53,8 @@ public class MatrizInc implements Grafo {
 		
 		for (int i=0; i<this.numVerts; i++) {
 			for (int j=0; j<this.numAres; j++) {
-				saida += "  |  ";
-				if (this.matAres[i][j] < 10 && this.matAres[i][j] >= 0) saida += "0";
-				saida += this.matAres[i][j];
+				saida += "  |  "+this.matAres[i][j];
+				while(saida.length()-saida.lastIndexOf('|')<10) saida+=' ';
 			} saida += "\n";
 		}
 		

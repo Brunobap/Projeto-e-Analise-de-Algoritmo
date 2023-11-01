@@ -42,13 +42,12 @@ public class MatrizAdj implements Grafo {
 	// Função para testes no console
 	@Override
 	public String toString() {
-		String saida = "";
+		String saida = "Matriz de Adjacência: \"origens nas linhas, destinos nas colunas\"\n\n";
 		
 		for (int i=0; i<this.numVerts; i++) {
 			for (int j=0; j<this.numVerts; j++) {
-				saida += "  |  ";
-				if (this.matVerts[i][j] < 10) saida += "0";
-				saida += this.matVerts[i][j];
+				saida += "  |  "+this.matVerts[i][j];
+				while(saida.length()-saida.lastIndexOf('|')<10) saida+=' ';
 			} saida += "\n";
 		}
 		
@@ -133,8 +132,7 @@ public class MatrizAdj implements Grafo {
 	}
 	@Override
 	public void setarPeso(Vertice origem, Vertice destino, double peso) throws Exception {
-		this.matVerts[origem.id()][destino.id()] = peso;
-		
+		this.matVerts[origem.id()][destino.id()] = peso;		
 	}
 	@Override
 	public ArrayList<Vertice> vertices() {

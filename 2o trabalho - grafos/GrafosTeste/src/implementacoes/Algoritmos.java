@@ -149,11 +149,98 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 		}
 	}
 
+	// É literalmente o algoritmo de Dijikstra, mas todas as arestas tem peso 1
 	@Override
 	public ArrayList<Aresta> menorCaminho(Grafo g, Vertice origem, Vertice destino) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		// Inicialização
+				// N = {A}
+				ArrayList<Vertice> N = new ArrayList<Vertice>();
+				N.add(origem);
+				
+				for (Vertice v : g.vertices()) {
+					if (g.existeAresta(origem, v)) {
+						v.setD(1);		
+						v.setPi(origem);					
+					} else { 
+						v.setD(Double.MAX_VALUE);
+						v.setPi(null);
+					}
+				}
+				origem.setD(0);
+				
+				// Vértices que ainda não foram "apagados da tabela"
+				ArrayList<Vertice> restam = new ArrayList<Vertice>();
+				restam.addAll(g.vertices());
+				restam.remove(origem);
+				
+				// Loop
+				ArrayList<Aresta> passosDados = new ArrayList<Aresta>();
+				do {
+					Aresta passo = menorPasso_SP(g, N, restam, destino);
+					if (passo == null) return null;
+					passosDados.add(passo);
+					Vertice v = restam.remove(restam.indexOf(passo.destino()));
+					N.add(v);
+					
+				} while (!N.contains(destino));
+
+				// Final: voltar da origem e ver o caminho que é formado
+				ArrayList<Aresta> caminho = new ArrayList<Aresta>();
+				Aresta a = null;
+				for (Aresta passo : g.getArrayAres())
+					if (passo.destino()==destino && passo.origem()==destino.getPi()) {
+						passosDados.remove(passo);
+						a = passo;
+						break;
+					}
+				caminho.add(a);
+				while (caminho.get(0).origem()!=origem) {
+					for (Aresta passo : g.getArrayAres())
+						if (passo.destino()==caminho.get(0).origem()) {
+							passosDados.remove(passo);
+							caminho.addFirst(passo);
+							break;
+						}				
+				}
+				
+				return caminho;
 	}
+	private static Aresta menorPasso_SP(Grafo g, ArrayList<Vertice> N, ArrayList<Vertice> restam, Vertice destino) {
+		try {			
+			ArrayList<Aresta> passosPossiveis = new ArrayList<Aresta>();			
+			
+			for (Aresta a : g.getArrayAres())
+				if (N.contains(a.origem()) && restam.contains(a.destino()) && !passosPossiveis.contains(a)) {
+					relaxa(a.origem(), a.destino());
+					passosPossiveis.add(a);
+				}
+			
+			ArrayList<Aresta> iguais = new ArrayList<Aresta>();
+			Aresta a = passosPossiveis.remove(0);
+			for (Aresta b : passosPossiveis) 
+				if (b.destino().getD() < a.destino().getD()) {
+					a = b;
+					iguais.removeAll(iguais);
+				} else if (b.destino().getD() == a.destino().getD()) iguais.add(b);			
+			
+			for (Aresta igual : iguais)
+				if (igual.destino().equals(destino)) {
+					a = igual;
+					break;
+				}
+			
+			return a;	
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	private static void relaxa (Vertice u, Vertice v) {
+		if (v.getD() > u.getD() + 1) {
+			v.setD(u.getD() + 1);
+			v.setPi(u);
+		}
+	}
+	
 
 	// Usa BEP mas retorna true quando 2 vértices cinza se encontram e false se não se cruzarem
 	@Override
@@ -334,6 +421,7 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 				v.setD(peso);
 			}
 		}
+		origem.setD(0);
 		
 		// Vértices que ainda não foram "apagados da tabela"
 		ArrayList<Vertice> restam = new ArrayList<Vertice>();
@@ -354,15 +442,15 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 		// Final: voltar da origem e ver o caminho que é formado
 		ArrayList<Aresta> caminho = new ArrayList<Aresta>();
 		Aresta a = null;
-		for (Aresta passo : passosDados)
-			if (passo.destino()==destino) {
+		for (Aresta passo : g.getArrayAres())
+			if (passo.destino()==destino && passo.origem()==destino.getPi()) {
 				passosDados.remove(passo);
 				a = passo;
 				break;
 			}
 		caminho.add(a);
 		while (caminho.get(0).origem()!=origem) {
-			for (Aresta passo : passosDados)
+			for (Aresta passo : g.getArrayAres())
 				if (passo.destino()==caminho.get(0).origem()) {
 					passosDados.remove(passo);
 					caminho.addFirst(passo);
@@ -402,8 +490,10 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 		}
 	}
 	private static void relaxa (Vertice u, Vertice v, Aresta w) {
-		if (v.getD() < u.getD() + w.peso()) v.setD(u.getD() + w.peso());
-		v.setPi(u);
+		if (v.getD() > u.getD() + w.peso()) {
+			v.setD(u.getD() + w.peso());
+			v.setPi(u);
+		}
 	}
 	
 
