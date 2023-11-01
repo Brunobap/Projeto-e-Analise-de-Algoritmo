@@ -314,84 +314,96 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 	@Override
 	public ArrayList<Aresta> caminhoMaisCurto(Grafo g, Vertice origem, Vertice destino) {
 		// Inicialização
-		ArrayList<Vertice> N = new ArrayList<Vertice>(), restam = new ArrayList<Vertice>();
+		// N = {A}
+		ArrayList<Vertice> N = new ArrayList<Vertice>();
 		N.add(origem);
+		
 		for (Vertice v : g.vertices()) {
-			if (v!=origem) restam.add(v);
+			// Caso o vérice não seja adjacente seu peso padrão, D = infinito, não muda
 			double peso = Double.MAX_VALUE;
-			try { for (Aresta a : g.arestasEntre(origem, v))
-				if (a.peso()<peso) peso = a.peso();
+			try { 
+				for (Aresta a : g.arestasEntre(origem, v)) {
+					// Se exsite uma aresta de peso menor, use ela como parâmetro
+					if (a.peso()<peso) peso = a.peso();		
+					v.setPi(origem);
+				}
 			} catch (Exception e) {
-				System.err.println(e);
-				return null;
-			} finally { v.setD(peso); }
+				// Esse vértice não é adjacente, D = infinito, Pi = null
+				v.setPi(null);
+			} finally { 
+				v.setD(peso);
+			}
 		}
 		
+		// Vértices que ainda não foram "apagados da tabela"
+		ArrayList<Vertice> restam = new ArrayList<Vertice>();
+		restam.addAll(g.vertices());
+		restam.remove(origem);
+		
 		// Loop
-		Vertice atual;
-		ArrayList<Aresta> caminho = new ArrayList<Aresta>();
+		ArrayList<Aresta> passosDados = new ArrayList<Aresta>();
 		do {
-			atual = N.get(N.size()-1);
-			Aresta passo = menorPasso(g, atual, restam);
-			if (passo == null) {
-				N.remove(atual);
-				caminho.remove(caminho.size()-1);
-			} else {
-				Vertice v = restam.remove(restam.indexOf(passo.destino()));
-				try { 
-					ArrayList<Vertice> adjs = g.adjacentesDe(v);
-					for (Vertice aux : adjs) 
-						if (!restam.contains(aux)) adjs.remove(aux); 
-					if (adjs.size()>0 || passo.destino()==destino) {
-						N.add(v); 
-						caminho.add(passo);
-					}
-				} catch (Exception e) {
-					// não precisa fazer nada, o passo não foi dado
-				}
-			}
-			atual = N.get(N.size()-1); 
+			Aresta passo = menorPasso(g, N, restam, destino);
+			if (passo == null) return null;
+			passosDados.add(passo);
+			Vertice v = restam.remove(restam.indexOf(passo.destino()));
+			N.add(v);
 			
-		} while (atual!=destino && N.size()!=0);
+		} while (!N.contains(destino));
+
+		// Final: voltar da origem e ver o caminho que é formado
+		ArrayList<Aresta> caminho = new ArrayList<Aresta>();
+		Aresta a = null;
+		for (Aresta passo : passosDados)
+			if (passo.destino()==destino) {
+				passosDados.remove(passo);
+				a = passo;
+				break;
+			}
+		caminho.add(a);
+		while (caminho.get(0).origem()!=origem) {
+			for (Aresta passo : passosDados)
+				if (passo.destino()==caminho.get(0).origem()) {
+					passosDados.remove(passo);
+					caminho.addFirst(passo);
+					break;
+				}				
+		}
 		
 		return caminho;
 	}
-	private static Aresta menorPasso(Grafo g, Vertice s, ArrayList<Vertice> adjs) {
-		try {
-			inicializa(g, s);
+	private static Aresta menorPasso(Grafo g, ArrayList<Vertice> N, ArrayList<Vertice> restam, Vertice destino) {
+		try {			
+			ArrayList<Aresta> passosPossiveis = new ArrayList<Aresta>();			
 			
-			ArrayList<Aresta> passosPossiveis = new ArrayList<Aresta>();
+			for (Aresta a : g.getArrayAres())
+				if (N.contains(a.origem()) && restam.contains(a.destino()) && !passosPossiveis.contains(a)) {
+					relaxa(a.origem(), a.destino(), a);
+					passosPossiveis.add(a);
+				}
 			
-			
-			for (int i=0; i<g.vertices().size()-1; i++)
-				for (Aresta a : g.getArrayAres())
-					if (adjs.contains(a.destino()) && g.adjacentesDe(s).contains(a.destino()) && !passosPossiveis.contains(a)) {
-						relaxa(a.origem(), a.destino(), a);
-						passosPossiveis.add(a);
-					}
-			
+			ArrayList<Aresta> iguais = new ArrayList<Aresta>();
 			Aresta a = passosPossiveis.remove(0);
 			for (Aresta b : passosPossiveis) 
-				if (b.destino().getD() < a.destino().getD()) a = b;
+				if (b.destino().getD() < a.destino().getD()) {
+					a = b;
+					iguais.removeAll(iguais);
+				} else if (b.destino().getD() == a.destino().getD()) iguais.add(b);			
+			
+			for (Aresta igual : iguais)
+				if (igual.destino().equals(destino)) {
+					a = igual;
+					break;
+				}
 			
 			return a;	
 		} catch (Exception e) {
-			System.err.println(e);
 			return null;
 		}
 	}
-	private static void inicializa (Grafo g, Vertice s) {
-		for (Vertice v : g.vertices()) {
-			v.setD(Integer.MAX_VALUE);
-			v.setPi(null);
-		}
-		s.setD(0);
-	}
 	private static void relaxa (Vertice u, Vertice v, Aresta w) {
-		if (v.getD() < u.getD() + w.peso()) {
-			v.setD(u.getD() + w.peso());
-			v.setPi(u);
-		}
+		if (v.getD() < u.getD() + w.peso()) v.setD(u.getD() + w.peso());
+		v.setPi(u);
 	}
 	
 

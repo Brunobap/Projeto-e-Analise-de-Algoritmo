@@ -215,13 +215,19 @@ public class MainFrame extends JFrame {
 		JButton btnNewButton_1 = new JButton("Ver AGM de Krukall");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				resultFrame.setTitle("\"Ver AGM de Krukall\"");
-				ArrayList<Aresta> AGM = (ArrayList<Aresta>) alg.agmUsandoKruskall(g);
-				String result = "Arestas da árvore mínima gerada:\n";
-				for (Aresta a : AGM)
-					result += "   "+a.origem().id()+" --> "+a.destino().id()+"\n";
-				resultFrame.setTxtResult(result);
-				resultFrame.setVisible(true);
+				try {
+					resultFrame.setTitle("\"Ver AGM de Krukall\"");
+					ArrayList<Aresta> AGM = (ArrayList<Aresta>) alg.agmUsandoKruskall(g);
+					String result = "Arestas da árvore mínima gerada:\n";
+					for (Aresta a : AGM)
+						result += "   "+a.origem().id()+" --"+a.peso()+"-> "+a.destino().id()+"\n";
+					
+					result += "\n\nCusto da AGM: "+alg.custoDaArvoreGeradora(g, AGM);
+					resultFrame.setTxtResult(result);
+					resultFrame.setVisible(true);
+				} catch (Exception err) {
+					
+				}
 			}
 		});
 		btnNewButton_1.setFont(new Font("Arial", Font.PLAIN, 12));		
@@ -257,7 +263,7 @@ public class MainFrame extends JFrame {
 					for (Aresta a : caminho)
 						result += "   "+a.origem().id()+" -"+a.peso()+"-> "+a.destino().id()+'\n';
 					
-					result += "Peso do caminho percorrido: "+alg.custoDoCaminho(g, caminho, ori, dest);
+					result += "\nPeso do caminho percorrido: "+alg.custoDoCaminho(g, caminho, ori, dest);
 					resultFrame.setTxtResult(result);
 					resultFrame.setVisible(true);
 					
