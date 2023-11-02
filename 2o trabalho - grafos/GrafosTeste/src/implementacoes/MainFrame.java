@@ -40,6 +40,7 @@ import javax.swing.JDesktopPane;
 import javax.swing.JMenuBar;
 import java.awt.Window.Type;
 import javax.swing.JCheckBox;
+import javax.swing.SpinnerNumberModel;
 
 public class MainFrame extends JFrame {
 
@@ -55,7 +56,7 @@ public class MainFrame extends JFrame {
 	 */
 	private final ErrorFrame errorFrame = new ErrorFrame();
 	/**
-	 * @wbp.nonvisual location=494,89
+	 * @wbp.nonvisual location=494,99
 	 */
 	private final ResultFrame resultFrame = new ResultFrame();
 
@@ -87,7 +88,7 @@ public class MainFrame extends JFrame {
 		setTitle("Simulador de grafos - Bruno Batista");
 		setFont(new Font("Arial", Font.PLAIN, 12));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 626);
+		setBounds(100, 100, 450, 697);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -274,17 +275,20 @@ public class MainFrame extends JFrame {
 			}
 		});
 		
-		JLabel lblNewLabel_2_1 = new JLabel("Vértice 1:");
+		JLabel lblNewLabel_2_1 = new JLabel("De:");
 		lblNewLabel_2_1.setFont(new Font("Arial", Font.PLAIN, 12));
 		
-		JLabel lblNewLabel_2_1_1 = new JLabel("Vértice 2:");
+		JLabel lblNewLabel_2_1_1 = new JLabel("Para:");
 		lblNewLabel_2_1_1.setFont(new Font("Arial", Font.PLAIN, 12));
 		
 		JButton btnPrintGrafo = new JButton("Visualizar a representação do grafo");
 		btnPrintGrafo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				resultFrame.setTitle("\"Visualizar a representação do grafo\"");
-				String representacao = g.toString();
+				String representacao = g.toString();				
+
+				representacao += "\n\nO grafo possui "+g.numeroDeVertices()+" vértices e "+g.numeroDeArestas()+" arestas atualmente.";
+				
 				resultFrame.setTxtResult(representacao);
 				resultFrame.setVisible(true);
 			}
@@ -317,6 +321,8 @@ public class MainFrame extends JFrame {
 				for (Aresta a : aresCruz)
 					result += "   "+a.origem().id()+" --"+a.peso()+"-> "+a.destino().id()+'\n';
 				
+				result += "\n\nO grafo possui "+g.numeroDeArestas()+" arestas atualmente.";
+				
 				resultFrame.setTxtResult(result);
 				resultFrame.setVisible(true);
 			}
@@ -324,6 +330,104 @@ public class MainFrame extends JFrame {
 		btnNewButton_1_2.setFont(new Font("Arial", Font.PLAIN, 12));
 				
 		chckPeso.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		JSpinner numPesoAdd = new JSpinner();
+		numPesoAdd.setModel(new SpinnerNumberModel(Double.valueOf(0), null, null, Double.valueOf(1)));
+		numPesoAdd.setEnabled(false);
+		
+		JCheckBox chckbxAdicionarUmPeso = new JCheckBox("Adicionar um peso a aresta");
+		chckbxAdicionarUmPeso.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (chckbxAdicionarUmPeso.isSelected()) numPesoAdd.setEnabled(true);
+				else  numPesoAdd.setEnabled(false);
+			}
+		});
+		chckbxAdicionarUmPeso.setFont(new Font("Arial", Font.PLAIN, 12));
+
+		JSpinner numOriAdd = new JSpinner();
+		numOriAdd.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		JSpinner numDestAdd = new JSpinner();
+		numDestAdd.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		JButton btnNewButton_2_1 = new JButton("Adicionar vértice entre");
+		btnNewButton_2_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					int nOri = (int) numOriAdd.getValue(), nDest = (int) numDestAdd.getValue();
+					Vertice ori = g.vertices().get(nOri), dest = g.vertices().get(nDest);
+					
+					if (chckbxAdicionarUmPeso.isSelected()) g.adicionarAresta(ori, dest, (double)numPesoAdd.getValue());
+					else g.adicionarAresta(ori, dest);
+					
+					String result = "Arestas salvas atualmente:\n\n";
+					for (Aresta a : g.getArrayAres())
+						result += "   "+a.origem().id()+" -"+a.peso()+"-> "+a.destino().id()+'\n';
+					result += "     /\\\n     |\n     |\n  nova aresta";
+					
+					result += "\n\nO grafo possui "+g.numeroDeArestas()+" arestas atualmente.";
+					
+					resultFrame.setTxtResult(result);
+					resultFrame.setVisible(true);
+					
+				} catch (Exception err) {
+					errorFrame.setLblErro("Erro ao criar uma aresta nova.\nCertifique-se de que ambos os vértices pertençam ao intervalo do grafo, e\nque o peso digitado é um número válido.");
+					errorFrame.setVisible(true);
+				}
+			}
+		});
+		btnNewButton_2_1.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		
+		JLabel lblNewLabel_2_1_1_1 = new JLabel("Para:");
+		lblNewLabel_2_1_1_1.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		JLabel lblNewLabel_2_1_2 = new JLabel("De:");
+		lblNewLabel_2_1_2.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		JLabel lblNewLabel_2_1_1_1_1 = new JLabel("Peso:");
+		lblNewLabel_2_1_1_1_1.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		numPesoAdd.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		JButton btnNewButton_2_1_1 = new JButton("Adicionar vértice entre");
+		btnNewButton_2_1_1.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		JSpinner numOriAdd_1 = new JSpinner();
+		numOriAdd_1.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		JLabel lblNewLabel_2_1_2_1 = new JLabel("De:");
+		lblNewLabel_2_1_2_1.setFont(new Font("Arial", Font.PLAIN, 12));
+
+		JSpinner numVertGrau = new JSpinner();
+		numVertGrau.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		JButton btnNewButton_2_1_2 = new JButton("Ver grau e adjacentes do vértice");
+		btnNewButton_2_1_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					resultFrame.setTitle("\"Ver o grau do vértice:\"");
+					
+					int nVert = (int)numVertGrau.getValue(), grau;
+					Vertice alvo = g.vertices().get(nVert);
+					
+					grau = g.grauDoVertice(alvo);
+					String result = "O vértice "+nVert+" é do grau "+grau+"\nEle é adjacente a:";
+					
+					if (grau!=0) for (Vertice v : g.adjacentesDe(alvo)) result += "  "+v.id();
+					else result += "  **ninguém**";
+					
+					resultFrame.setTxtResult(result);
+					resultFrame.setVisible(true);
+					
+				} catch (Exception err) {
+					errorFrame.setLblErro("Erro ao encontrar o vértice.\nCertifique-se de que o vértice digitado pertença ao intervalo do grafo.");
+					errorFrame.setVisible(true);
+				}
+			}
+		});
+		btnNewButton_2_1_2.setFont(new Font("Arial", Font.PLAIN, 12));
+		
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
 		gl_panel_2.setHorizontalGroup(
 			gl_panel_2.createParallelGroup(Alignment.LEADING)
@@ -340,25 +444,65 @@ public class MainFrame extends JFrame {
 					.addContainerGap(268, Short.MAX_VALUE))
 				.addGroup(gl_panel_2.createSequentialGroup()
 					.addContainerGap()
+					.addComponent(btnNewButton_1_2)
+					.addContainerGap(174, Short.MAX_VALUE))
+				.addGroup(gl_panel_2.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel_2.createSequentialGroup()
+							.addGap(193)
+							.addComponent(lblNewLabel_2_1_2_1, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_panel_2.createSequentialGroup()
+							.addComponent(btnNewButton_2_1_1, GroupLayout.PREFERRED_SIZE, 187, GroupLayout.PREFERRED_SIZE)
+							.addGap(6)
+							.addComponent(numOriAdd_1, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap(147, Short.MAX_VALUE))
+				.addGroup(gl_panel_2.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(btnNewButton_2_1_2)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(numVertGrau, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(153, Short.MAX_VALUE))
+				.addGroup(gl_panel_2.createSequentialGroup()
+					.addContainerGap()
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panel_2.createSequentialGroup()
 							.addComponent(chckPeso)
 							.addContainerGap())
-						.addGroup(gl_panel_2.createSequentialGroup()
-							.addComponent(btnNewButton_2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+							.addGroup(gl_panel_2.createSequentialGroup()
+								.addComponent(chckbxAdicionarUmPeso, GroupLayout.PREFERRED_SIZE, 251, GroupLayout.PREFERRED_SIZE)
+								.addContainerGap())
 							.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblNewLabel_2_1, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE)
-								.addComponent(numOri, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
-								.addComponent(numDest, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
-								.addComponent(lblNewLabel_2_1_1, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
-							.addGap(76))))
-				.addGroup(gl_panel_2.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(btnNewButton_1_2)
-					.addContainerGap(174, Short.MAX_VALUE))
+								.addGroup(gl_panel_2.createSequentialGroup()
+									.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+										.addGroup(gl_panel_2.createSequentialGroup()
+											.addGap(193)
+											.addComponent(lblNewLabel_2_1_2, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE)
+											.addGap(6)
+											.addComponent(lblNewLabel_2_1_1_1, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
+										.addGroup(gl_panel_2.createSequentialGroup()
+											.addComponent(btnNewButton_2_1, GroupLayout.PREFERRED_SIZE, 187, GroupLayout.PREFERRED_SIZE)
+											.addGap(6)
+											.addComponent(numOriAdd, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
+											.addGap(23)
+											.addComponent(numDestAdd, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)))
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+										.addComponent(lblNewLabel_2_1_1_1_1, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE)
+										.addComponent(numPesoAdd, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE))
+									.addContainerGap())
+								.addGroup(gl_panel_2.createSequentialGroup()
+									.addComponent(btnNewButton_2, GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+										.addComponent(lblNewLabel_2_1, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE)
+										.addComponent(numOri, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE))
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+										.addComponent(numDest, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
+										.addComponent(lblNewLabel_2_1_1, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
+									.addGap(76))))))
 		);
 		gl_panel_2.setVerticalGroup(
 			gl_panel_2.createParallelGroup(Alignment.LEADING)
@@ -383,9 +527,42 @@ public class MainFrame extends JFrame {
 						.addGroup(gl_panel_2.createSequentialGroup()
 							.addComponent(lblNewLabel_2_1)
 							.addGap(26)))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(chckPeso)
-					.addContainerGap(63, Short.MAX_VALUE))
+					.addGap(12)
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel_2.createSequentialGroup()
+							.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblNewLabel_2_1_2)
+								.addComponent(lblNewLabel_2_1_1_1))
+							.addGap(3)
+							.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+								.addComponent(btnNewButton_2_1)
+								.addGroup(gl_panel_2.createSequentialGroup()
+									.addGap(1)
+									.addComponent(numOriAdd, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addGroup(gl_panel_2.createSequentialGroup()
+									.addGap(1)
+									.addComponent(numDestAdd, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+						.addGroup(gl_panel_2.createSequentialGroup()
+							.addComponent(lblNewLabel_2_1_1_1_1)
+							.addGap(4)
+							.addComponent(numPesoAdd, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(chckbxAdicionarUmPeso)
+					.addGap(12)
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnNewButton_2_1_2)
+						.addComponent(numVertGrau, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGap(488)
+					.addComponent(lblNewLabel_2_1_2_1)
+					.addGap(3)
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+						.addComponent(btnNewButton_2_1_1)
+						.addGroup(gl_panel_2.createSequentialGroup()
+							.addGap(1)
+							.addComponent(numOriAdd_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		gl_panel_2.setAutoCreateContainerGaps(true);
 		gl_panel_2.setAutoCreateGaps(true);
@@ -409,9 +586,9 @@ public class MainFrame extends JFrame {
 					.addComponent(panel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(5)
 					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 264, GroupLayout.PREFERRED_SIZE)
-					.addGap(44))
+					.addPreferredGap(ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+					.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 336, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap())
 		);
 		gl_contentPane.setAutoCreateContainerGaps(true);
 		gl_contentPane.setAutoCreateGaps(true);
