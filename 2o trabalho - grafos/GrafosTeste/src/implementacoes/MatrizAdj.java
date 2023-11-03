@@ -9,12 +9,12 @@ import grafos.Vertice;
 public class MatrizAdj implements Grafo {
 		
 	private int numVerts;
-	private double[][] matVerts;
+	private double[][][] matVerts;
 	private ArrayList<Vertice> arrayVerts;
 	private ArrayList<Aresta> arrayAres;
 	
 	// Getters e Setters
-	public double[][] getMatVerts() {	
+	public double[][][] getMatVerts() {	
 		return matVerts;
 	}
 	public int getNumVerts() {	
@@ -23,7 +23,7 @@ public class MatrizAdj implements Grafo {
 	public void setNumVerts(int numVerts) {	
 		this.numVerts = numVerts;
 	}	
-	public void setMatVerts(double[][] matVerts) {	
+	public void setMatVerts(double[][][] matVerts) {	
 		this.matVerts = matVerts;
 	}	
 	public ArrayList<Vertice> getArrayVerts() {
@@ -46,8 +46,21 @@ public class MatrizAdj implements Grafo {
 		
 		for (int i=0; i<this.numVerts; i++) {
 			for (int j=0; j<this.numVerts; j++) {
-				saida += "  |  "+this.matVerts[i][j];
-				while(saida.length()-saida.lastIndexOf('|')<10) saida+=' ';
+				saida += "  |  ";
+				switch(this.matVerts[i][j].length) {
+					case 0:
+						saida += "0.00";
+						break;
+					case 1:
+						saida += matVerts[i][j][0];
+						break;
+					default:
+						saida += "[";
+						for (double d : matVerts[i][j]) saida += "  "+d;
+						saida += " ]";
+						break;
+				}				
+				while(saida.length()-saida.lastIndexOf('|')<15) saida+=' ';
 			} saida += "\n";
 		}
 		
@@ -59,7 +72,7 @@ public class MatrizAdj implements Grafo {
 		this.setNumVerts(Integer.parseInt(entrada.get(0)));
 		entrada.remove(0);
 		
-		this.matVerts = new double[this.numVerts][this.numVerts];
+		this.matVerts = new double[this.numVerts][this.numVerts][0];
 		this.arrayAres = new ArrayList<Aresta>();
 		this.arrayVerts = new ArrayList<Vertice>();
 		
@@ -82,7 +95,12 @@ public class MatrizAdj implements Grafo {
 				this.arrayAres.add(new Aresta(vOrigem, vDest, Integer.parseInt(strPeso)));
 				
 				// Botar a aresta na matriz
-				this.matVerts[this.arrayVerts.indexOf(vOrigem)][this.arrayVerts.indexOf(vDest)] = Integer.parseInt(strPeso);				
+				double[] aux = new double[this.matVerts[this.arrayVerts.indexOf(vOrigem)][this.arrayVerts.indexOf(vDest)].length+1];
+				for (int i=0; i<this.matVerts[this.arrayVerts.indexOf(vOrigem)][this.arrayVerts.indexOf(vDest)].length; i++) 
+					aux[i] = this.matVerts[this.arrayVerts.indexOf(vOrigem)][this.arrayVerts.indexOf(vDest)][i];
+				this.matVerts[this.arrayVerts.indexOf(vOrigem)][this.arrayVerts.indexOf(vDest)] = aux;
+				int espaco = this.matVerts[this.arrayVerts.indexOf(vOrigem)][this.arrayVerts.indexOf(vDest)].length-1;
+				this.matVerts[this.arrayVerts.indexOf(vOrigem)][this.arrayVerts.indexOf(vDest)][espaco] = Double.parseDouble(strPeso);				
 			}
 		}
 	}
@@ -90,17 +108,27 @@ public class MatrizAdj implements Grafo {
 	// Funções da interface
 	@Override
 	public void adicionarAresta(Vertice origem, Vertice destino) throws Exception {
-		this.matVerts[destino.id()][origem.id()] = 1;
+		double[] aux = new double[this.matVerts[this.arrayVerts.indexOf(origem)][this.arrayVerts.indexOf(destino)].length+1];
+		for (int i=0; i<this.matVerts[this.arrayVerts.indexOf(origem)][this.arrayVerts.indexOf(destino)].length; i++) 
+			aux[i] = this.matVerts[this.arrayVerts.indexOf(origem)][this.arrayVerts.indexOf(destino)][i];
+		this.matVerts[this.arrayVerts.indexOf(origem)][this.arrayVerts.indexOf(destino)] = aux;
+		int espaco = this.matVerts[this.arrayVerts.indexOf(origem)][this.arrayVerts.indexOf(destino)].length-1;
+		this.matVerts[this.arrayVerts.indexOf(origem)][this.arrayVerts.indexOf(destino)][espaco] = 1;
 		this.arrayAres.add(new Aresta(origem, destino));
 	}
 	@Override
 	public void adicionarAresta(Vertice origem, Vertice destino, double peso) throws Exception {
-		this.matVerts[origem.id()][destino.id()] = peso;
+		double[] aux = new double[this.matVerts[this.arrayVerts.indexOf(origem)][this.arrayVerts.indexOf(destino)].length+1];
+		for (int i=0; i<this.matVerts[this.arrayVerts.indexOf(origem)][this.arrayVerts.indexOf(destino)].length; i++) 
+			aux[i] = this.matVerts[this.arrayVerts.indexOf(origem)][this.arrayVerts.indexOf(destino)][i];
+		this.matVerts[this.arrayVerts.indexOf(origem)][this.arrayVerts.indexOf(destino)] = aux;
+		int espaco = this.matVerts[this.arrayVerts.indexOf(origem)][this.arrayVerts.indexOf(destino)].length-1;
+		this.matVerts[this.arrayVerts.indexOf(origem)][this.arrayVerts.indexOf(destino)][espaco] = peso;
 		this.arrayAres.add(new Aresta(origem, destino, peso));	
 	}
 	@Override
 	public boolean existeAresta(Vertice origem, Vertice destino) {
-		if (this.matVerts[origem.id()][destino.id()] > 0) return true;
+		if (this.matVerts[origem.id()][destino.id()].length > 0) return true;
 		else return false;
 	}
 	@Override
@@ -108,7 +136,7 @@ public class MatrizAdj implements Grafo {
 		int grau = 0;
 
 		for (int i=0; i<this.numVerts; i++)
-			if (this.matVerts[vertice.id()][i] > 0) grau++;
+			if (this.matVerts[vertice.id()][i].length > 0) grau++;
 				
 		return grau;
 	}
@@ -126,13 +154,14 @@ public class MatrizAdj implements Grafo {
 		ArrayList<Vertice> listVerts = new ArrayList<Vertice>();
 		
 		for (int i=0; i<this.numVerts; i++)
-			if (this.matVerts[idVert][i] > 0) listVerts.add(this.arrayVerts.get(i));
+			if (this.matVerts[idVert][i][0] > 0) listVerts.add(this.arrayVerts.get(i));
 				
 		return listVerts;
 	}
 	@Override
 	public void setarPeso(Vertice origem, Vertice destino, double peso) throws Exception {
-		this.matVerts[origem.id()][destino.id()] = peso;		
+		this.arestasEntre(origem, destino).get(0).setarPeso(peso);
+		this.matVerts[origem.id()][destino.id()][0] = peso;		
 	}
 	@Override
 	public ArrayList<Vertice> vertices() {

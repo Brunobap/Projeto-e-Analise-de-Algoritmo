@@ -42,7 +42,7 @@ public class ListaAdj implements Grafo {
 	// Função para testes no console
 	@Override
 	public String toString() {
-		String saida = "";
+		String saida = "Lista de Incidência: \"vértices e seus conjuntos de adjacências e pesos\"\n\n";
 		
 		for (int i=0; i<this.numVerts; i++) {
 			saida += this.arrayVerts.get(i).id();

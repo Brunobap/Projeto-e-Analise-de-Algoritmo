@@ -49,7 +49,7 @@ public class MatrizInc implements Grafo {
 	// Função para testes no console
 	@Override
 	public String toString() {
-		String saida = "";
+		String saida = "Matriz de Incidência: \"arestas nas colunas, vértices nas linhas\"\n\n";
 		
 		for (int i=0; i<this.numVerts; i++) {
 			for (int j=0; j<this.numAres; j++) {

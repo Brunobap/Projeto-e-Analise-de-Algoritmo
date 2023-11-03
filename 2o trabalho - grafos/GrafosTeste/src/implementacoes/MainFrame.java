@@ -88,7 +88,7 @@ public class MainFrame extends JFrame {
 		setTitle("Simulador de grafos - Bruno Batista");
 		setFont(new Font("Arial", Font.PLAIN, 12));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 697);
+		setBounds(100, 100, 450, 738);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -236,9 +236,11 @@ public class MainFrame extends JFrame {
 		JCheckBox chckPeso = new JCheckBox("Usar o peso das arestas para o caminho");
 
 		JSpinner numOri = new JSpinner();
+		numOri.setModel(new SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
 		numOri.setFont(new Font("Arial", Font.PLAIN, 12));
 		
 		JSpinner numDest = new JSpinner();
+		numDest.setModel(new SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
 		numDest.setFont(new Font("Arial", Font.PLAIN, 12));
 		
 		JButton btnNewButton_2 = new JButton("Ver o caminho mínimo entre");
@@ -246,6 +248,7 @@ public class MainFrame extends JFrame {
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {					
+					resultFrame.setTitle("\"Ver o caminho mínimo entre\"");
 					ArrayList<Aresta> caminho;
 					String result = "Arestas do caminho:\n";
 					int nOri = Integer.parseInt(numOri.getValue().toString());
@@ -332,7 +335,7 @@ public class MainFrame extends JFrame {
 		chckPeso.setFont(new Font("Arial", Font.PLAIN, 12));
 		
 		JSpinner numPesoAdd = new JSpinner();
-		numPesoAdd.setModel(new SpinnerNumberModel(Double.valueOf(0), null, null, Double.valueOf(1)));
+		numPesoAdd.setModel(new SpinnerNumberModel(Double.valueOf(0), Double.valueOf(0), null, Double.valueOf(1)));
 		numPesoAdd.setEnabled(false);
 		
 		JCheckBox chckbxAdicionarUmPeso = new JCheckBox("Adicionar um peso a aresta");
@@ -345,15 +348,18 @@ public class MainFrame extends JFrame {
 		chckbxAdicionarUmPeso.setFont(new Font("Arial", Font.PLAIN, 12));
 
 		JSpinner numOriAdd = new JSpinner();
+		numOriAdd.setModel(new SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
 		numOriAdd.setFont(new Font("Arial", Font.PLAIN, 12));
 		
 		JSpinner numDestAdd = new JSpinner();
+		numDestAdd.setModel(new SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
 		numDestAdd.setFont(new Font("Arial", Font.PLAIN, 12));
 		
 		JButton btnNewButton_2_1 = new JButton("Adicionar vértice entre");
 		btnNewButton_2_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
+					resultFrame.setTitle("\"Adicionar vértice entre\"");
 					int nOri = (int) numOriAdd.getValue(), nDest = (int) numDestAdd.getValue();
 					Vertice ori = g.vertices().get(nOri), dest = g.vertices().get(nDest);
 					
@@ -400,13 +406,14 @@ public class MainFrame extends JFrame {
 		lblNewLabel_2_1_2_1.setFont(new Font("Arial", Font.PLAIN, 12));
 
 		JSpinner numVertGrau = new JSpinner();
+		numVertGrau.setModel(new SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
 		numVertGrau.setFont(new Font("Arial", Font.PLAIN, 12));
 		
 		JButton btnNewButton_2_1_2 = new JButton("Ver grau e adjacentes do vértice");
 		btnNewButton_2_1_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					resultFrame.setTitle("\"Ver o grau do vértice:\"");
+					resultFrame.setTitle("\"Ver grau e adjacentes do vértice:\"");
 					
 					int nVert = (int)numVertGrau.getValue(), grau;
 					Vertice alvo = g.vertices().get(nVert);
@@ -427,6 +434,56 @@ public class MainFrame extends JFrame {
 			}
 		});
 		btnNewButton_2_1_2.setFont(new Font("Arial", Font.PLAIN, 12));
+
+		JSpinner numOriSet = new JSpinner();
+		numOriSet.setModel(new SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
+		numOriSet.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		JSpinner numPesoSet = new JSpinner();
+		numPesoSet.setModel(new SpinnerNumberModel(Double.valueOf(0), Double.valueOf(0), null, Double.valueOf(1)));
+		numPesoSet.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		JSpinner numDestSet = new JSpinner();
+		numDestSet.setModel(new SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
+		numDestSet.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		JButton btnNewButton_2_1_3 = new JButton("Setar peso da aresta");
+		btnNewButton_2_1_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					resultFrame.setTitle("\"Setar peso da aresta\"");
+					int nOri = (int) numOriSet.getValue(), nDest = (int) numDestSet.getValue();
+					double peso = (double) numPesoSet.getValue();
+					Vertice ori = g.vertices().get(nOri), dest = g.vertices().get(nDest);
+					Aresta alvo = g.arestasEntre(ori, dest).get(0);
+					
+					String result = "O peso da aresta foi alterado com sucesso.\n\n  Peso anterior: "+alvo.peso();
+					g.setarPeso(ori, dest, peso);
+					result += "\n  Peso atual: "+alvo.peso();
+					
+					resultFrame.setTxtResult(result);
+					resultFrame.setVisible(true);
+					
+				} catch (Exception err) {
+					errorFrame.setLblErro("Erro ao mudar o valor da aresta.\nCertifique-se de que ambos os vértices digitados pertençam ao intervalo do\ngrafo, e que eles possuam pelo menos uma aresta entre si.");
+					errorFrame.setVisible(true);
+				}
+			}
+		});
+		btnNewButton_2_1_3.setFont(new Font("Arial", Font.PLAIN, 12));
+
+		JLabel lblNewLabel_2_1_2_2 = new JLabel("De:");
+		lblNewLabel_2_1_2_2.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		JLabel lblNewLabel_2_1_1_1_2 = new JLabel("Para:");
+		lblNewLabel_2_1_1_1_2.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		
+		JLabel lblNewLabel_2_1_1_1_1_1 = new JLabel("Peso:");
+		lblNewLabel_2_1_1_1_1_1.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		JLabel lblNewLabel_3 = new JLabel("* Atenção: caso hajam arestas paralelas, só a 1ª salva será afetada.");
+		lblNewLabel_3.setFont(new Font("Arial", Font.PLAIN, 12));
 		
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
 		gl_panel_2.setHorizontalGroup(
@@ -462,7 +519,7 @@ public class MainFrame extends JFrame {
 					.addComponent(btnNewButton_2_1_2)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(numVertGrau, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(153, Short.MAX_VALUE))
+					.addContainerGap(144, Short.MAX_VALUE))
 				.addGroup(gl_panel_2.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
@@ -503,6 +560,29 @@ public class MainFrame extends JFrame {
 										.addComponent(numDest, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
 										.addComponent(lblNewLabel_2_1_1, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
 									.addGap(76))))))
+				.addGroup(gl_panel_2.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel_2.createSequentialGroup()
+							.addGap(193)
+							.addComponent(lblNewLabel_2_1_2_2, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE)
+							.addGap(6)
+							.addComponent(lblNewLabel_2_1_1_1_2, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE)
+							.addGap(10)
+							.addComponent(lblNewLabel_2_1_1_1_1_1, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_panel_2.createSequentialGroup()
+							.addComponent(btnNewButton_2_1_3, GroupLayout.PREFERRED_SIZE, 187, GroupLayout.PREFERRED_SIZE)
+							.addGap(6)
+							.addComponent(numOriSet, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
+							.addGap(23)
+							.addComponent(numDestSet, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
+							.addGap(27)
+							.addComponent(numPesoSet, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+				.addGroup(gl_panel_2.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblNewLabel_3)
+					.addContainerGap(368, Short.MAX_VALUE))
 		);
 		gl_panel_2.setVerticalGroup(
 			gl_panel_2.createParallelGroup(Alignment.LEADING)
@@ -554,7 +634,27 @@ public class MainFrame extends JFrame {
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnNewButton_2_1_2)
 						.addComponent(numVertGrau, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(488)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblNewLabel_2_1_2_2)
+						.addComponent(lblNewLabel_2_1_1_1_2)
+						.addComponent(lblNewLabel_2_1_1_1_1_1))
+					.addGap(3)
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+						.addComponent(btnNewButton_2_1_3)
+						.addGroup(gl_panel_2.createSequentialGroup()
+							.addGap(1)
+							.addComponent(numOriSet, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_panel_2.createSequentialGroup()
+							.addGap(1)
+							.addComponent(numDestSet, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_panel_2.createSequentialGroup()
+							.addGap(1)
+							.addComponent(numPesoSet, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblNewLabel_3)
+					.addGap(705)
 					.addComponent(lblNewLabel_2_1_2_1)
 					.addGap(3)
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
@@ -586,9 +686,9 @@ public class MainFrame extends JFrame {
 					.addComponent(panel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(5)
 					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
-					.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 336, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap())
+					.addPreferredGap(ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+					.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 378, GroupLayout.PREFERRED_SIZE)
+					.addGap(38))
 		);
 		gl_contentPane.setAutoCreateContainerGaps(true);
 		gl_contentPane.setAutoCreateGaps(true);
@@ -601,7 +701,7 @@ public class MainFrame extends JFrame {
 		try {
 			this.g = alg.carregarGrafo(endArq, tipo);
 		} catch (Exception e) {
-			// TODO: handle exception
+			System.err.println("Eita carai, não era pra ter chegado aqui");
 		}
 	}
 }
