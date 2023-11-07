@@ -151,7 +151,9 @@ public class ListaAdj implements Grafo {
 	}
 	@Override
 	public ArrayList<Vertice> vertices() {
-		return this.arrayVerts;
+		ArrayList<Vertice> clone = new ArrayList<Vertice>();
+		clone.addAll(arrayVerts);
+		return clone;
 	}		
 	@Override
 	public ArrayList<Aresta> arestasEntre(Vertice origem, Vertice destino) throws Exception {

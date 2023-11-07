@@ -56,7 +56,7 @@ public class MainFrame extends JFrame {
 	 */
 	private final ErrorFrame errorFrame = new ErrorFrame();
 	/**
-	 * @wbp.nonvisual location=494,99
+	 * @wbp.nonvisual location=494,89
 	 */
 	private final ResultFrame resultFrame = new ResultFrame();
 
@@ -83,12 +83,12 @@ public class MainFrame extends JFrame {
 		errorFrame.setType(Type.UTILITY);
 		errorFrame.getContentPane().setFont(new Font("Arial", Font.PLAIN, 12));
 		// Valor do exemplo inicial
-		this.endArq = "Teste2.txt";			
+		this.endArq = "Teste.txt";			
 		
 		setTitle("Simulador de grafos - Bruno Batista");
 		setFont(new Font("Arial", Font.PLAIN, 12));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 738);
+		setBounds(100, 100, 450, 779);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -264,10 +264,13 @@ public class MainFrame extends JFrame {
 						caminho = alg.menorCaminho(g, ori, dest);
 					}
 					
-					for (Aresta a : caminho)
-						result += "   "+a.origem().id()+" -"+a.peso()+"-> "+a.destino().id()+'\n';
-					
-					result += "\nPeso do caminho percorrido: "+alg.custoDoCaminho(g, caminho, ori, dest);
+					if (caminho == null) result += "   ** Não há nenhum caminho entre esses 2 vértices **";
+					else {
+						for (Aresta a : caminho)
+							result += "   "+a.origem().id()+" -"+a.peso()+"-> "+a.destino().id()+'\n';
+						
+						result += "\nPeso do caminho percorrido: "+alg.custoDoCaminho(g, caminho, ori, dest);
+					}
 					resultFrame.setTxtResult(result);
 					resultFrame.setVisible(true);
 					
@@ -355,11 +358,11 @@ public class MainFrame extends JFrame {
 		numDestAdd.setModel(new SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
 		numDestAdd.setFont(new Font("Arial", Font.PLAIN, 12));
 		
-		JButton btnNewButton_2_1 = new JButton("Adicionar vértice entre");
+		JButton btnNewButton_2_1 = new JButton("Adicionar aresta no grafo");
 		btnNewButton_2_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					resultFrame.setTitle("\"Adicionar vértice entre\"");
+					resultFrame.setTitle("\"Adicionar aresta no grafo\"");
 					int nOri = (int) numOriAdd.getValue(), nDest = (int) numDestAdd.getValue();
 					Vertice ori = g.vertices().get(nOri), dest = g.vertices().get(nDest);
 					
@@ -485,6 +488,51 @@ public class MainFrame extends JFrame {
 		JLabel lblNewLabel_3 = new JLabel("* Atenção: caso hajam arestas paralelas, só a 1ª salva será afetada.");
 		lblNewLabel_3.setFont(new Font("Arial", Font.PLAIN, 12));
 		
+		JButton btnNewButton_2_1_4 = new JButton("Fazer busca em largura");
+		btnNewButton_2_1_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				resultFrame.setTitle("\"Fazer busca em largura\"");
+				ArrayList<Aresta> buscadas = (ArrayList<Aresta>) alg.buscaEmLargura(g);
+				String result = "Resultados da busca em largura:\n\nVértices:";
+				
+				for (Vertice v : g.vertices()) {
+					result += "   "+v.id()+" - Cor: "+v.getCor()+" - Distancia da origem: "+v.getDist()+ " - Pai do vértice: ";
+					if (v.getPi() != null) result += v.getPi().id();
+					else result += "null";
+					result += '\n';
+				}
+				
+				result += "\n\nArestas:\n";
+				for (Aresta a : buscadas)
+					result += "   "+a.origem().id()+" ---> "+a.destino().id()+'\n';
+
+				resultFrame.setTxtResult(result);
+				resultFrame.setVisible(true);
+			}
+		});
+		btnNewButton_2_1_4.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		JButton btnNewButton_2_1_4_1 = new JButton("Fazer busca em profundidade");
+		btnNewButton_2_1_4_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				resultFrame.setTitle("\"Fazer busca em profundidade\"");
+				ArrayList<Aresta> buscadas = (ArrayList<Aresta>) alg.buscaEmProfundidade(g);
+				String result = "Resultados da busca em profundidade:\n\nVértices:";
+				
+				for (Vertice v : g.vertices()) {
+					result += "   "+v.id()+" - Cor: "+v.getCor()+"  -  Tempo de descoberta: "+v.getD()+ "  -  Tempo de finalização: "+v.getF()+'\n';
+				}
+				
+				result += "\n\nArestas:\n";
+				for (Aresta a : buscadas)
+					result += "   "+a.origem().id()+" ---> "+a.destino().id()+'\n';
+
+				resultFrame.setTxtResult(result);
+				resultFrame.setVisible(true);
+			}
+		});
+		btnNewButton_2_1_4_1.setFont(new Font("Arial", Font.PLAIN, 12));
+		
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
 		gl_panel_2.setHorizontalGroup(
 			gl_panel_2.createParallelGroup(Alignment.LEADING)
@@ -582,7 +630,13 @@ public class MainFrame extends JFrame {
 				.addGroup(gl_panel_2.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(lblNewLabel_3)
-					.addContainerGap(368, Short.MAX_VALUE))
+					.addContainerGap(40, Short.MAX_VALUE))
+				.addGroup(gl_panel_2.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(btnNewButton_2_1_4, GroupLayout.PREFERRED_SIZE, 175, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnNewButton_2_1_4_1, GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE)
+					.addGap(27))
 		);
 		gl_panel_2.setVerticalGroup(
 			gl_panel_2.createParallelGroup(Alignment.LEADING)
@@ -635,7 +689,6 @@ public class MainFrame extends JFrame {
 						.addComponent(btnNewButton_2_1_2)
 						.addComponent(numVertGrau, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
 						.addComponent(lblNewLabel_2_1_2_2)
 						.addComponent(lblNewLabel_2_1_1_1_2)
@@ -654,7 +707,11 @@ public class MainFrame extends JFrame {
 							.addComponent(numPesoSet, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblNewLabel_3)
-					.addGap(705)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnNewButton_2_1_4)
+						.addComponent(btnNewButton_2_1_4_1))
+					.addGap(676)
 					.addComponent(lblNewLabel_2_1_2_1)
 					.addGap(3)
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
@@ -686,9 +743,9 @@ public class MainFrame extends JFrame {
 					.addComponent(panel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(5)
 					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-					.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 378, GroupLayout.PREFERRED_SIZE)
-					.addGap(38))
+					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 405, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap())
 		);
 		gl_contentPane.setAutoCreateContainerGaps(true);
 		gl_contentPane.setAutoCreateGaps(true);

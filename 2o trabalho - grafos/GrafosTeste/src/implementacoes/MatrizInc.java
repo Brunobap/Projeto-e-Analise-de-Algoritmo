@@ -95,8 +95,8 @@ public class MatrizInc implements Grafo {
 				this.arrayAres.add(new Aresta(vOrigem, vDest, Integer.parseInt(strPeso)));
 				
 				// Botar a aresta na matriz
-				this.matAres[Integer.parseInt(strDest)][aux] = Integer.parseInt(strPeso);
 				this.matAres[vOrigem.id()][aux] = -Integer.parseInt(strPeso);
+				this.matAres[Integer.parseInt(strDest)][aux] = Integer.parseInt(strPeso);
 				aux++;
 			}
 		}
@@ -156,8 +156,14 @@ public class MatrizInc implements Grafo {
 	public ArrayList<Vertice> adjacentesDe(Vertice vertice) throws Exception {
 		ArrayList<Vertice> listVerts = new ArrayList<Vertice>();
 		
-		for (Aresta a: this.arrayAres)
-			if (a.origem() == vertice) listVerts.add(a.destino());
+		for (int i=0; i<this.numAres; i++)
+			if (this.matAres[vertice.id()][i] != 0) {
+				for (int j=0; j<this.numVerts; j++)
+					if (this.matAres[j][i] > 0) {
+						listVerts.add(this.arrayVerts.get(j));
+						break;
+					}
+			}
 				
 		return listVerts;
 	}
@@ -183,7 +189,9 @@ public class MatrizInc implements Grafo {
 	}
 	@Override
 	public ArrayList<Vertice> vertices() {
-		return this.arrayVerts;
+		ArrayList<Vertice> clone = new ArrayList<Vertice>();
+		clone.addAll(arrayVerts);
+		return clone;
 	}		
 	@Override
 	public ArrayList<Aresta> arestasEntre(Vertice origem, Vertice destino) throws Exception {

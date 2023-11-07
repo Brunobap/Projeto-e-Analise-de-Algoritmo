@@ -169,33 +169,26 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 				origem.setD(0);
 				
 				// Vértices que ainda não foram "apagados da tabela"
-				ArrayList<Vertice> restam = new ArrayList<Vertice>();
-				restam.addAll(g.vertices());
+				ArrayList<Vertice> restam = g.vertices();
 				restam.remove(origem);
 				
 				// Loop
 				ArrayList<Aresta> passosDados = new ArrayList<Aresta>();
-				do {
+				while (!N.contains(destino)) {
 					Aresta passo = menorPasso_SP(g, N, restam, destino);
 					if (passo == null) return null;
 					passosDados.add(passo);
 					Vertice v = restam.remove(restam.indexOf(passo.destino()));
 					N.add(v);
 					
-				} while (!N.contains(destino));
+				} 
 
 				// Final: voltar da origem e ver o caminho que é formado
 				ArrayList<Aresta> caminho = new ArrayList<Aresta>();
-				Aresta a = null;
-				for (Aresta passo : g.getArrayAres())
-					if (passo.destino()==destino && passo.origem()==destino.getPi()) {
-						passosDados.remove(passo);
-						a = passo;
-						break;
-					}
+				Aresta a = passosDados.removeLast();
 				caminho.add(a);
-				while (caminho.get(0).origem()!=origem) {
-					for (Aresta passo : g.getArrayAres())
+				while (caminho.get(0).origem()!=origem && passosDados.size()>0) {
+					for (Aresta passo : passosDados)
 						if (passo.destino()==caminho.get(0).origem()) {
 							passosDados.remove(passo);
 							caminho.addFirst(passo);
@@ -424,33 +417,26 @@ public class Algoritmos implements AlgoritmosEmGrafos{
 		origem.setD(0);
 		
 		// Vértices que ainda não foram "apagados da tabela"
-		ArrayList<Vertice> restam = new ArrayList<Vertice>();
-		restam.addAll(g.vertices());
+		ArrayList<Vertice> restam = g.vertices();
 		restam.remove(origem);
 		
 		// Loop
 		ArrayList<Aresta> passosDados = new ArrayList<Aresta>();
-		do {
+		while (!N.contains(destino)) {
 			Aresta passo = menorPasso(g, N, restam, destino);
 			if (passo == null) return null;
 			passosDados.add(passo);
 			Vertice v = restam.remove(restam.indexOf(passo.destino()));
 			N.add(v);
 			
-		} while (!N.contains(destino));
+		}
 
 		// Final: voltar da origem e ver o caminho que é formado
 		ArrayList<Aresta> caminho = new ArrayList<Aresta>();
-		Aresta a = null;
-		for (Aresta passo : g.getArrayAres())
-			if (passo.destino()==destino && passo.origem()==destino.getPi()) {
-				passosDados.remove(passo);
-				a = passo;
-				break;
-			}
+		Aresta a = passosDados.removeLast();
 		caminho.add(a);
 		while (caminho.get(0).origem()!=origem) {
-			for (Aresta passo : g.getArrayAres())
+			for (Aresta passo : passosDados)
 				if (passo.destino()==caminho.get(0).origem()) {
 					passosDados.remove(passo);
 					caminho.addFirst(passo);

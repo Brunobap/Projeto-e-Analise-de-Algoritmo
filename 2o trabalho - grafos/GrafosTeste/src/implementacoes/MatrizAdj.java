@@ -154,7 +154,7 @@ public class MatrizAdj implements Grafo {
 		ArrayList<Vertice> listVerts = new ArrayList<Vertice>();
 		
 		for (int i=0; i<this.numVerts; i++)
-			if (this.matVerts[idVert][i][0] > 0) listVerts.add(this.arrayVerts.get(i));
+			if (this.matVerts[idVert][i].length > 0) listVerts.add(this.arrayVerts.get(i));
 				
 		return listVerts;
 	}
@@ -165,7 +165,9 @@ public class MatrizAdj implements Grafo {
 	}
 	@Override
 	public ArrayList<Vertice> vertices() {
-		return this.arrayVerts;
+		ArrayList<Vertice> clone = new ArrayList<Vertice>();
+		clone.addAll(arrayVerts);
+		return clone;
 	}		
 	@Override
 	public ArrayList<Aresta> arestasEntre(Vertice origem, Vertice destino) throws Exception {
