@@ -28,6 +28,7 @@ namespace CaixeiroViajante
         private int numVerts;
         private bool[][] matriz;
         private ArrayList vertices, arestas;
+        
         public Grafo (String path)
         {
             vertices = new ArrayList();
@@ -65,6 +66,7 @@ namespace CaixeiroViajante
                 }
             }
         }
+        
         public int NumVertices() { return numVerts; }
         public ArrayList Vertices() { return vertices; }
         public ArrayList Arestas() { return arestas; }
