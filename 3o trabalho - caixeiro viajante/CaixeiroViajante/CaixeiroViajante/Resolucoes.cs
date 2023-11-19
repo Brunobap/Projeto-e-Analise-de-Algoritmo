@@ -10,7 +10,7 @@ namespace CaixeiroViajante
     internal class Resolucoes
     {
         /*
-         * Modelo de "Problemas de Satisfação de Restrições":
+         * Modelo de "Problemas de Satisfação de Restrições": (não usado, até o momento)
          *      Backtrack-DFS (A, k, Sk)
          *          if A = (a1, a2, ..., aN) is a solution then report it.
          *          else
@@ -59,7 +59,7 @@ namespace CaixeiroViajante
                         todosOsCaminhos.Insert(aux,copia);
                     }
                 }
-                if (ultimo < g.NumVertices() - 1)
+                if (caminho.Length < g.NumVertices())
                     todosOsCaminhos.Remove(caminho);
                 else
                 {
