@@ -26,23 +26,22 @@ namespace CaixeiroViajante
     internal class Grafo
     {
         private int numVerts;
-        private bool[][] matriz;
-        private ArrayList vertices, arestas;
+        private double[][] matriz;
+        private ArrayList vertices;
         
         public Grafo (String path)
         {
             vertices = new ArrayList();
-            arestas = new ArrayList();
 
             String[] entrada = File.ReadAllLines(path);
             numVerts = int.Parse(entrada[0]);
 
-            matriz = new bool[numVerts][];
+            matriz = new double[numVerts][];
 
             for (int i = 0; i < numVerts; i++)
             {
                 vertices.Add(i);
-                matriz[i] = new bool[numVerts];
+                matriz[i] = new double[numVerts];
             }
 
             for (int i=1; i<entrada.Length; i++)
@@ -54,37 +53,35 @@ namespace CaixeiroViajante
                 {
                     String strDest = linha[j].Substring(0, linha[j].IndexOf("-"));
 
-                    int a = linha[j].IndexOf("-") + 1, b = linha[j].IndexOf(";")-2;
-                    String strPeso = linha[j].Substring(a, b);
+                    int a = linha[j].IndexOf("-")+1;
+                    String strPeso = linha[j].Substring(a);
+                    strPeso = strPeso.Replace(';', '\0');
 
                     int vDest = int.Parse(strDest);
                     double peso = double.Parse(strPeso);
 
-                    arestas.Add(new Aresta(vOrigem, vDest, peso));
-
-                    matriz[vOrigem][vDest] = true;
+                    matriz[vOrigem][vDest] = peso;
                 }
             }
         }
         
         public int NumVertices() { return numVerts; }
         public ArrayList Vertices() { return vertices; }
-        public ArrayList Arestas() { return arestas; }
-        public int GrauDoVertice(int vertice)
-        {
-            int grau = 0;
+        public ArrayList Arestas() { 
+            ArrayList arestas = new ArrayList();
 
-            for (int i = 0; i < numVerts; i++)
-                if (matriz[vertice][i]) grau++;
+            for (int i=0; i<numVerts; i++)
+                for (int j=0; j<numVerts; j++)
+                    if (matriz[i][j]>0) arestas.Add(new Aresta(i, j, matriz[i][j]));
 
-            return grau;
+            return arestas; 
         }
         public ArrayList ArestaDe(int vertice)
         {
             ArrayList saidas = new ArrayList();
 
-            foreach (Aresta a in arestas)
-                if (a.Origem() == vertice) saidas.Add(a);
+            for (int i=0; i<numVerts; i++)
+                if (matriz[vertice][i] > 0) saidas.Add(new Aresta(vertice, i, matriz[vertice][i]));
 
             return saidas;
         }
@@ -93,18 +90,13 @@ namespace CaixeiroViajante
             ArrayList saidas = new ArrayList();
 
             for (int i=0; i<numVerts; i++)
-                if (matriz[vertice][i]) saidas.Add(i);
+                if (matriz[vertice][i] > 0) saidas.Add(i);
 
             return saidas;
         }
-        public ArrayList arestasEntre(int origem, int destino)
+        public double arestaEntre(int origem, int destino)
         {
-            ArrayList saidas = new ArrayList();
-
-            foreach (Aresta a in arestas)
-                if (a.Destino()==destino && a.Origem()==origem) saidas.Add(a);
-
-            return saidas;
+            return matriz[origem][destino];
         }
     }
 }
