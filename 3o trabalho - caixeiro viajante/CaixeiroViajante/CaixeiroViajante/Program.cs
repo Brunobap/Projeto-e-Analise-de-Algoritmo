@@ -3,7 +3,7 @@ using CaixeiroViajante;
 using System.Collections;
 
 
-String path = "D:\\Programacao\\Projeto-e-Analise-de-Algoritmo\\3o trabalho - caixeiro viajante\\CaixeiroViajante\\CaixeiroViajante\\Teste15.txt";
+String path = "D:\\Programacao\\Projeto-e-Analise-de-Algoritmo\\3o trabalho - caixeiro viajante\\CaixeiroViajante\\CaixeiroViajante\\Teste20.txt";
 Grafo g = new Grafo(path);
 Console.WriteLine("Arquivo usado: "+path);
 

@@ -42,24 +42,26 @@ namespace CaixeiroViajante
             {
                 int[] caminho = (int[]) todosOsCaminhos[aux];
                 int ultimo = caminho.Length-1;
-                foreach (Aresta a in g.ArestaDe((int) caminho[ultimo]))
+                for (int a=0; a<g.numVerts; a++)
                 {
-                    double auxPeso = 0;
-                    for (int i = 0; i < caminho.Length-1; i++)
+                    if (g.matriz[caminho[ultimo]][a] > 0)
                     {
-                        int origem = caminho[i], destino = caminho[i + 1];
-                        auxPeso += g.arestaEntre(origem, destino);
-                    }
-
-                    if (!caminho.Contains(a.Destino()) && auxPeso < pesoCaminho)
-                    {
-                        int[] copia = new int[caminho.Length + 1];
-                        caminho.CopyTo(copia, 0);
-                        copia[copia.Length-1] = a.Destino();
-                        todosOsCaminhos.Insert(aux,copia);
+                        double auxPeso = 0;
+                        for (int i = 0; i < caminho.Length - 1; i++)
+                        {
+                            int origem = caminho[i], destino = caminho[i + 1];
+                            auxPeso += g.matriz[origem][destino];
+                        }
+                        if (!caminho.Contains(a) && auxPeso < pesoCaminho)
+                        {
+                            int[] copia = new int[caminho.Length + 1];
+                            caminho.CopyTo(copia, 0);
+                            copia[copia.Length - 1] = a;
+                            todosOsCaminhos.Insert(todosOsCaminhos.IndexOf(caminho), copia);
+                        }
                     }
                 }
-                if (caminho.Length < g.NumVertices())
+                if (caminho.Length < g.numVerts)
                     todosOsCaminhos.Remove(caminho);
                 else
                 {
@@ -69,7 +71,7 @@ namespace CaixeiroViajante
                     for (int i = 0; i < copia.Length-1; i++)
                     {
                         int origem = copia[i], destino = copia[i + 1];
-                        auxPeso += g.arestaEntre(origem, destino);
+                        auxPeso += g.matriz[origem][destino];
                     }
                     if (auxPeso < pesoCaminho)
                     {
@@ -80,7 +82,6 @@ namespace CaixeiroViajante
                     else
                         todosOsCaminhos.Remove(caminho);             
                 }
-
             }
 
             // Pegar o peso do 1o caminho na lista, e tirar esse caminho da lista
@@ -92,10 +93,10 @@ namespace CaixeiroViajante
             {
                 // Pegar o peso do caminho 
                 double pesoComp = 0;
-                for (int i = 0; i < g.NumVertices(); i++)
+                for (int i = 0; i < g.numVerts; i++)
                 {
                     int origem = (int)caminho[i], destino = (int)caminho[i + 1];
-                    pesoComp += g.arestaEntre(origem, destino);
+                    pesoComp += g.matriz[origem][destino];
                 }
 
                 // Achou um caminho menor, ele agora é o escolhido
@@ -112,17 +113,5 @@ namespace CaixeiroViajante
             return saida;
         }
 
-        public static object[] AlgoritmoGenetico(Grafo g)
-        {
-            Object[] saida = new Object[2];
-            double pesoCaminho = 0;
-            int[] arrayCaminho = new int[g.NumVertices()];
-            ArrayList faltam = (ArrayList) g.Vertices().Clone();
-            faltam.RemoveAt(0);
-
-            saida[0] = pesoCaminho;
-            saida[1] = arrayCaminho;
-            return saida;
-        }
     }
 }

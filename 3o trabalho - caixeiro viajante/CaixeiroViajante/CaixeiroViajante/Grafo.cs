@@ -25,8 +25,8 @@ namespace CaixeiroViajante
     }
     internal class Grafo
     {
-        private int numVerts;
-        private double[][] matriz;
+        public int numVerts;
+        public double[][] matriz;
         private ArrayList vertices;
         
         public Grafo (String path)
@@ -65,26 +65,7 @@ namespace CaixeiroViajante
             }
         }
         
-        public int NumVertices() { return numVerts; }
         public ArrayList Vertices() { return vertices; }
-        public ArrayList Arestas() { 
-            ArrayList arestas = new ArrayList();
-
-            for (int i=0; i<numVerts; i++)
-                for (int j=0; j<numVerts; j++)
-                    if (matriz[i][j]>0) arestas.Add(new Aresta(i, j, matriz[i][j]));
-
-            return arestas; 
-        }
-        public ArrayList ArestaDe(int vertice)
-        {
-            ArrayList saidas = new ArrayList();
-
-            for (int i=0; i<numVerts; i++)
-                if (matriz[vertice][i] > 0) saidas.Add(new Aresta(vertice, i, matriz[vertice][i]));
-
-            return saidas;
-        }
         public ArrayList AdjacentesDe(int vertice)
         {
             ArrayList saidas = new ArrayList();
@@ -93,10 +74,6 @@ namespace CaixeiroViajante
                 if (matriz[vertice][i] > 0) saidas.Add(i);
 
             return saidas;
-        }
-        public double arestaEntre(int origem, int destino)
-        {
-            return matriz[origem][destino];
         }
     }
 }
