@@ -3,13 +3,13 @@ using CaixeiroViajante;
 using System.Collections;
 
 
-String path = ".\\..\\..\\..\\Teste12.txt";
+String path = ".\\..\\..\\..\\Teste100.txt";
 Grafo g = new Grafo(path);
 Console.WriteLine("Arquivo usado: "+path);
 
-Object[] solucaoTentErr = Resolucoes.TentativaErro(g);
+/*Object[] solucaoTentErr = Resolucoes.TentativaErro(g);
 Console.Write("Solução por Tentativa e Erro:\n - Peso do caminho encontrado: " + solucaoTentErr[0] + "\n - Ordem do caminho encontrado:");
-foreach (int v in (int[])solucaoTentErr[1]) Console.Write(" " + v);
+foreach (int v in (int[])solucaoTentErr[1]) Console.Write(" " + v);*/
 
 Object[] solucaoHeurist = Resolucoes.AlgoritmoGenetico(g);
 Console.Write("\n\nSolução por Algoritmo Genético:\n - Peso do caminho encontrado: " + solucaoHeurist[0] + "\n - Ordem do caminho encontrado:");

@@ -152,8 +152,8 @@ namespace CaixeiroViajante
             }
             #endregion
 
-            // Evoluir por nE+6 gerações
-            for (int i = 0; i < g.numVerts*1E2; i++)
+            // Evoluir por n*100 gerações
+            for (int i = 0; i < g.numVerts*100; i++)
             {
                 #region 1 Selecionar os pais/sobreviventes da geração antiga
                 for (int j = 0; j < 6; j++)
