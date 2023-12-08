@@ -8,30 +8,13 @@ using System.Threading.Tasks;
 
 namespace CaixeiroViajante
 {
-    // O vértice só precisa da informação do seu id, então ele pode ser substituido por um inteiro
-    internal class Aresta
-    {
-        private int origem, destino;
-        private double peso;
-        public Aresta (int origem, int destino, double peso)
-        {
-            this.origem = origem;
-            this.destino = destino;
-            this.peso = peso;
-        }
-        public int Origem() { return origem; }
-        public int Destino() { return destino; }
-        public double Peso() { return peso; }
-    }
     internal class Grafo
     {
         public int numVerts;
         public double[][] matriz;
-        private ArrayList vertices;
         
         public Grafo (String path)
         {
-            vertices = new ArrayList();
 
             String[] entrada = File.ReadAllLines(path);
             numVerts = int.Parse(entrada[0]);
@@ -39,10 +22,7 @@ namespace CaixeiroViajante
             matriz = new double[numVerts][];
 
             for (int i = 0; i < numVerts; i++)
-            {
-                vertices.Add(i);
                 matriz[i] = new double[numVerts];
-            }
 
             for (int i=1; i<entrada.Length; i++)
             {
@@ -65,7 +45,6 @@ namespace CaixeiroViajante
             }
         }
         
-        public ArrayList Vertices() { return vertices; }
         public ArrayList AdjacentesDe(int vertice)
         {
             ArrayList saidas = new ArrayList();
