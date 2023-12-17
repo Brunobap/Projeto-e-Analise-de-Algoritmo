@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CaixeiroViajante")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+583baee3706bd7032a4d2b8127b996053544642b")]
 [assembly: System.Reflection.AssemblyProductAttribute("CaixeiroViajante")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CaixeiroViajante")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

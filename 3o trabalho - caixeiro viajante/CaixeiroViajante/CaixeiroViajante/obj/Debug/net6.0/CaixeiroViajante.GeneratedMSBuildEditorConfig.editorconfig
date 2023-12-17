@@ -9,3 +9,5 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = CaixeiroViajante
 build_property.ProjectDir = D:\Programacao\Projeto-e-Analise-de-Algoritmo\3o trabalho - caixeiro viajante\CaixeiroViajante\CaixeiroViajante\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 

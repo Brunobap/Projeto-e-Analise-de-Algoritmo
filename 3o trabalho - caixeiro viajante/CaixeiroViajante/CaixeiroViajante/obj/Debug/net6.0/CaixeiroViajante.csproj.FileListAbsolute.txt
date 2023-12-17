@@ -3,7 +3,6 @@ D:\Programacao\Projeto-e-Analise-de-Algoritmo\3o trabalho - caixeiro viajante\Ca
 D:\Programacao\Projeto-e-Analise-de-Algoritmo\3o trabalho - caixeiro viajante\CaixeiroViajante\CaixeiroViajante\bin\Debug\net6.0\CaixeiroViajante.runtimeconfig.json
 D:\Programacao\Projeto-e-Analise-de-Algoritmo\3o trabalho - caixeiro viajante\CaixeiroViajante\CaixeiroViajante\bin\Debug\net6.0\CaixeiroViajante.dll
 D:\Programacao\Projeto-e-Analise-de-Algoritmo\3o trabalho - caixeiro viajante\CaixeiroViajante\CaixeiroViajante\bin\Debug\net6.0\CaixeiroViajante.pdb
-D:\Programacao\Projeto-e-Analise-de-Algoritmo\3o trabalho - caixeiro viajante\CaixeiroViajante\CaixeiroViajante\obj\Debug\net6.0\CaixeiroViajante.csproj.AssemblyReference.cache
 D:\Programacao\Projeto-e-Analise-de-Algoritmo\3o trabalho - caixeiro viajante\CaixeiroViajante\CaixeiroViajante\obj\Debug\net6.0\CaixeiroViajante.GeneratedMSBuildEditorConfig.editorconfig
 D:\Programacao\Projeto-e-Analise-de-Algoritmo\3o trabalho - caixeiro viajante\CaixeiroViajante\CaixeiroViajante\obj\Debug\net6.0\CaixeiroViajante.AssemblyInfoInputs.cache
 D:\Programacao\Projeto-e-Analise-de-Algoritmo\3o trabalho - caixeiro viajante\CaixeiroViajante\CaixeiroViajante\obj\Debug\net6.0\CaixeiroViajante.AssemblyInfo.cs
@@ -13,3 +12,4 @@ D:\Programacao\Projeto-e-Analise-de-Algoritmo\3o trabalho - caixeiro viajante\Ca
 D:\Programacao\Projeto-e-Analise-de-Algoritmo\3o trabalho - caixeiro viajante\CaixeiroViajante\CaixeiroViajante\obj\Debug\net6.0\CaixeiroViajante.pdb
 D:\Programacao\Projeto-e-Analise-de-Algoritmo\3o trabalho - caixeiro viajante\CaixeiroViajante\CaixeiroViajante\obj\Debug\net6.0\CaixeiroViajante.genruntimeconfig.cache
 D:\Programacao\Projeto-e-Analise-de-Algoritmo\3o trabalho - caixeiro viajante\CaixeiroViajante\CaixeiroViajante\obj\Debug\net6.0\ref\CaixeiroViajante.dll
+D:\Programacao\Projeto-e-Analise-de-Algoritmo\3o trabalho - caixeiro viajante\CaixeiroViajante\CaixeiroViajante\obj\Debug\net6.0\CaixeiroViajante.sourcelink.json
